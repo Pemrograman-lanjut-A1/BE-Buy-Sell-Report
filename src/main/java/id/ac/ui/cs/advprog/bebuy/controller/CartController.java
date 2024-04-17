@@ -11,21 +11,25 @@ import java.util.List;
 public class CartController {
 
     @Autowired
-    private CartService cartService;
+    CartService cartService;
 
     @PostMapping("/add-item")
-    public void addItemToCart(@RequestBody CartItem cartItem) {
+    public String addItemToCart() {
+        return "AddItemToCart";
     }
 
     @GetMapping("/get-items")
-    public List<CartItem> getCartItems() {
+    public String getCartItems() {
+        return "GetCartItems";
     }
 
     @PostMapping("/update-item-quantity")
-    public void updateItemQuantity(@RequestParam long productId, @RequestParam int quantity) {
+    public String updateItemQuantity() {
+        return "UpdateItemQuantity";
     }
 
     @DeleteMapping("/remove-item/{productId}")
-    public void removeItemFromCart(@PathVariable long productId) {
+    public String removeItemFromCart(@PathVariable String productId) {
+        return "RemoveItemFromCart";
     }
 }

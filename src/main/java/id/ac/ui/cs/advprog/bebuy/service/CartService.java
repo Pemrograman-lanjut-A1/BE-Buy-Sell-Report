@@ -4,10 +4,10 @@ import id.ac.ui.cs.advprog.bebuy.model.Cart;
 import java.util.List;
 
 public interface CartService {
-    public Cart addItemToCart();
-    public List<CartItem> getCartItems();
-    public Cart updateItemQuantity();
-    public Cart removeItemFromCart();
+    Cart addItemToCart();
+    List<Cart> getCartItems();
+    Cart updateItemQuantity();
+    Cart removeItemFromCart();
 }
 
 
