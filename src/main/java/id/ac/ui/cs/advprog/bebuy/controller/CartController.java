@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/listing", produces="application/json")
+@RequestMapping(path="/cart", produces="application/json")
 @CrossOrigin(origins="*")
 public class CartController {
 
