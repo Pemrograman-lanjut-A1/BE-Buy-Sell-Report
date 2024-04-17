@@ -1,16 +1,14 @@
-package id.ac.ui.cs.advprog.bebuy.service;
+package id.ac.ui.cs.advprog.besell.service;
 
-import id.ac.ui.cs.advprog.besell.service.CartServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
-
-    @Mock
-    //private CartItem mockCartItem;
 
     @InjectMocks
     private CartServiceImpl cartService;
