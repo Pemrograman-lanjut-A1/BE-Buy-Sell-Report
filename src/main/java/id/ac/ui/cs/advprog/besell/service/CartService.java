@@ -1,6 +1,6 @@
-package id.ac.ui.cs.advprog.bebuy.service;
+package id.ac.ui.cs.advprog.besell.service;
 
-import id.ac.ui.cs.advprog.bebuy.model.Cart;
+import id.ac.ui.cs.advprog.besell.model.Cart;
 import java.util.List;
 
 public interface CartService {
