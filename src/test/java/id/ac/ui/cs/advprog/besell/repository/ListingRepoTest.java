@@ -25,7 +25,7 @@ class ListingRepoTest {
         Listing listing = new Listing();
         listing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing.setListingName("Sampo Cap Bambang");
-        listing.setListingQuantity(100);
+        listing.setListingStock(100);
         listing.setListingPrice(1200);
         listingRepository.create(listing);
 
@@ -34,7 +34,7 @@ class ListingRepoTest {
         Listing savedListing = listingIterator.next();
         assertEquals(listing.getListingId(), savedListing.getListingId());
         assertEquals(listing.getListingName(), savedListing.getListingName());
-        assertEquals(listing.getListingQuantity(), savedListing.getListingQuantity());
+        assertEquals(listing.getListingStock(), savedListing.getListingStock());
         assertEquals(listing.getListingPrice(), savedListing.getListingPrice());
     }
 
@@ -49,13 +49,13 @@ class ListingRepoTest {
         Listing listing1 = new Listing();
         listing1.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing1.setListingName("Sampo Cap Bambang");
-        listing1.setListingQuantity(100);
+        listing1.setListingStock(100);
         listingRepository.create(listing1);
 
         Listing listing2 = new Listing();
         listing2.setListingId("a0f9de46-90b1-437d-a0bf-d0821dde9096");
         listing2.setListingName("Sampo Cap Usep");
-        listing2.setListingQuantity(50);
+        listing2.setListingStock(50);
         listingRepository.create(listing2);
 
         Iterator<Listing> listingIterator = listingRepository.findAll();
@@ -72,19 +72,19 @@ class ListingRepoTest {
         Listing listing = new Listing();
         listing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing.setListingName("Sampo Cap Bambang");
-        listing.setListingQuantity(100);
+        listing.setListingStock(100);
         listingRepository.create(listing);
 
         Listing editedListing = new Listing();
         editedListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         editedListing.setListingName("Sampo Cap Bango");
-        editedListing.setListingQuantity(-5);
+        editedListing.setListingStock(-5);
         listingRepository.update(editedListing);
 
         listing = listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
         assertEquals(editedListing.getListingId(), listing.getListingId());
         assertEquals(editedListing.getListingName(), listing.getListingName());
-        assertEquals(editedListing.getListingQuantity(), listing.getListingQuantity());
+        assertEquals(editedListing.getListingStock(), listing.getListingStock());
     }
 
     @Test
@@ -92,7 +92,7 @@ class ListingRepoTest {
         Listing listing1 = new Listing();
         listing1.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing1.setListingName("Sampo Cap Bambang");
-        listing1.setListingQuantity(100);
+        listing1.setListingStock(100);
         listingRepository.create(listing1);
 
         listingRepository.delete(listing1);

@@ -32,7 +32,7 @@ class ListingServiceImplTest {
         Listing listing = new Listing();
         listing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing.setListingName("Sampo Cap Bambang");
-        listing.setListingQuantity(100);
+        listing.setListingStock(100);
 
         Mockito.when(listingRepository.create(listing)).thenReturn(listing);
         listingService.create(listing);
@@ -44,7 +44,7 @@ class ListingServiceImplTest {
         Listing savedListing = listingList.getFirst();
         assertEquals(listing.getListingId(), savedListing.getListingId());
         assertEquals(listing.getListingName(), savedListing.getListingName());
-        assertEquals(listing.getListingQuantity(), savedListing.getListingQuantity());
+        assertEquals(listing.getListingStock(), savedListing.getListingStock());
     }
 
     @Test
@@ -62,7 +62,7 @@ class ListingServiceImplTest {
         Listing listing1 = new Listing();
         listing1.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing1.setListingName("Sampo Cap Bambang");
-        listing1.setListingQuantity(100);
+        listing1.setListingStock(100);
 
         Mockito.when(listingRepository.create(listing1)).thenReturn(listing1);
         listingService.create(listing1);
@@ -70,7 +70,7 @@ class ListingServiceImplTest {
         Listing listing2 = new Listing();
         listing2.setListingId("a0f9de46-90b1-437d-a0bf-d0821dde9096");
         listing2.setListingName("Sampo Cap Usep");
-        listing2.setListingQuantity(50);
+        listing2.setListingStock(50);
         Mockito.when(listingRepository.create(listing2)).thenReturn(listing2);
         listingService.create(listing2);
 
@@ -90,7 +90,7 @@ class ListingServiceImplTest {
         Listing listing = new Listing();
         listing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing.setListingName("Sampo Cap Bambang");
-        listing.setListingQuantity(100);
+        listing.setListingStock(100);
 
         Mockito.when(listingRepository.create(listing)).thenReturn(listing);
         listingService.create(listing);
@@ -98,7 +98,7 @@ class ListingServiceImplTest {
         Listing editedListing = new Listing();
         editedListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         editedListing.setListingName("Sampo Cap Bango");
-        editedListing.setListingQuantity(0);
+        editedListing.setListingStock(0);
         listingService.update(editedListing);
 
         Mockito.when(listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(editedListing);
@@ -113,7 +113,7 @@ class ListingServiceImplTest {
         Listing listing1 = new Listing();
         listing1.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listing1.setListingName("Sampo Cap Bambang");
-        listing1.setListingQuantity(100);
+        listing1.setListingStock(100);
 
         Mockito.when(listingRepository.create(listing1)).thenReturn(listing1);
         listingService.create(listing1);

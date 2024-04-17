@@ -32,7 +32,7 @@ class ListingTest {
 
     @Test
     void testGetListingQuantity(){
-        assertEquals(100, this.listing.getListingQuantity());
+        assertEquals(100, this.listing.getListingStock());
     }
 }
 
