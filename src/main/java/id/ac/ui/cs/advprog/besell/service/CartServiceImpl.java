@@ -1,8 +1,8 @@
+// CartServiceImpl.java
 package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Cart;
 import id.ac.ui.cs.advprog.besell.repository.CartRepository;
-import id.ac.ui.cs.advprog.besell.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +12,7 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
+
     @Override
     public Cart addItemToCart() {
         return null;
@@ -19,7 +20,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Cart> getCartItems() {
-        return null;
+        return cartRepository.getCartItems();
     }
 
     @Override
@@ -28,7 +29,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart removeItemFromCart() {
-        return null;
+    public Cart updateItemQuantity(String productId, int newQuantity) {
+        return cartRepository.updateItemQuantity(productId, newQuantity);
+    }
+
+    @Override
+    public Cart removeItemFromCart(String productId) {
+        return cartRepository.removeItemFromCart(productId) ? new Cart.Builder(productId, "Product")
+                .quantity(0)
+                .price(0)
+                .build() : null;
     }
 }
