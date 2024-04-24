@@ -17,6 +17,18 @@ public class Report {
 
     public Report(String id, String authorId, String description,
                   LocalDateTime reportDate, String targetId, ReportTargetType targetType) {
+        this.id = id;
+        this.authorId = authorId;
+        setDescription(description);
+        this.reportDate = reportDate;
+        this.targetId = targetId;
+        this.targetType = targetType;
+    }
 
+    public void setDescription(String description) {
+        if (description.isEmpty()) {
+            throw new IllegalArgumentException("Description cannot be empty");
+        }
+        this.description = description;
     }
 }
