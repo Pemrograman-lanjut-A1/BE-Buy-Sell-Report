@@ -1,34 +1,39 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
+import id.ac.ui.cs.advprog.besell.model.Cart;
 import id.ac.ui.cs.advprog.besell.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping(path="/cart", produces="application/json")
-@CrossOrigin(origins="*")
+@RequestMapping(path = "/cart", produces = "application/json")
+@CrossOrigin(origins = "*")
 public class CartController {
 
     @Autowired
-    CartService cartService;
+    private CartService cartService;
 
     @PostMapping("/add-item")
-    public String addItemToCart() {
-        return "AddItemToCart";
+    public ResponseEntity<String> addItemToCart(@RequestBody Cart cartItem) {
+        return ResponseEntity.ok("Item added to cart");
     }
 
     @GetMapping("/get-items")
-    public String getCartItems() {
-        return "GetCartItems";
+    public ResponseEntity<List<Cart>> getCartItems() {
+        List<Cart> cartItems = cartService.getCartItems();
+        return ResponseEntity.ok(cartItems);
     }
 
     @PostMapping("/update-item-quantity")
-    public String updateItemQuantity() {
-        return "UpdateItemQuantity";
+    public ResponseEntity<String> updateItemQuantity(@RequestParam String productId, @RequestParam int quantity) {
+        return ResponseEntity.ok("Item quantity updated");
     }
 
     @DeleteMapping("/remove-item/{productId}")
-    public String removeItemFromCart(@PathVariable String productId) {
-        return "RemoveItemFromCart";
+    public ResponseEntity<String> removeItemFromCart(@PathVariable String productId) {
+        return ResponseEntity.ok("Item removed from cart");
     }
 }
