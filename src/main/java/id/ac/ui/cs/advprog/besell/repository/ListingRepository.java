@@ -12,22 +12,42 @@ public class ListingRepository{
     private List<Listing> listingData = new ArrayList<>();
 
     public Listing create(Listing listing){
-        return null;
+        if(listing.getStock() < 0){
+            listing.setStock(0);
+        }
+        listingData.add(listing);
+        return listing;
     }
 
     public Listing delete(Listing listing){
-        return null;
+        listingData.remove(listing);
+        return listing;
     }
 
     public Listing update(Listing updatedListing){
+        if(updatedListing.getStock() < 0){
+            updatedListing.setStock(0);
+        }
+        for (int i = 0; i < listingData.size(); i++) {
+            Listing listing = listingData.get(i);
+            if(listing.getId().equals(updatedListing.getId())){
+                listingData.set(i, updatedListing);
+                return updatedListing;
+            }
+        }
         return null;
     }
 
     public Listing findById(String id){
+        for(Listing listing : listingData){
+            if(listing.getId().equals(id)){
+                return listing;
+            }
+        }
         return null;
     }
 
     public Iterator<Listing> findAll(){
-        return null;
+        return listingData.iterator();
     }
 }
