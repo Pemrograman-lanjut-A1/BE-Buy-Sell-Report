@@ -10,4 +10,6 @@ public interface ReportService {
     public Report deleteReport();
     public Report getReportById();
     public List<Report> findAll();
+
+    public List<Report> findReportsByItemId(String itemId);
 }
