@@ -7,7 +7,8 @@ public interface CartService {
     Cart addItemToCart();
     List<Cart> getCartItems();
     Cart updateItemQuantity();
-    Cart removeItemFromCart();
+    Cart updateItemQuantity(String productId, int newQuantity);
+    Cart removeItemFromCart(String productId);
 }
 
 
