@@ -9,13 +9,13 @@ import java.util.List;
 
 @Repository
 public class ListingRepository{
-    private List<Listing> productData = new ArrayList<>();
+    private List<Listing> listingData = new ArrayList<>();
 
-    public Listing create(Listing product){
+    public Listing create(Listing listing){
         return null;
     }
 
-    public Listing delete(Listing product){
+    public Listing delete(Listing listing){
         return null;
     }
 

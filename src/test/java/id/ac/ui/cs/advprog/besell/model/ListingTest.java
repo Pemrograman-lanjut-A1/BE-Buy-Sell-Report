@@ -11,14 +11,14 @@ class ListingTest {
     @BeforeEach
     void SetUp(){
         this.builder = new Listing.ListingBuilder("Red Sweater", 12000);
-        this.listing = builder.setId("eb558e9f-1c39-460e-8860-71af6af63bd6")
-                .setStock(99)
+        this.listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
-                .setImageUrl("google.com");
+                .setImageUrl("google.com")
+                .build();
     }
     @Test
     void testGetListingId(){
-        assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd6", this.listing.getId());
+        assertNotNull(this.listing.getId());
     }
 
     @Test

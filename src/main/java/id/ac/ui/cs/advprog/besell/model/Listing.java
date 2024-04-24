@@ -24,6 +24,14 @@ public class Listing {
         this.imageUrl = builder.imageUrl;
     }
 
+    public void setStock(int stock) {
+        if (stock < 0) {
+            this.stock = 0;
+        } else {
+            this.stock = stock;
+        }
+    }
+
     public static class ListingBuilder {
         // Required parameters
         private String name;
@@ -37,6 +45,21 @@ public class Listing {
         public ListingBuilder(String name, int price) {
             this.name = name;
             this.price = price;
+        }
+
+        public ListingBuilder setStock(int stock) {
+            this.stock = stock;
+            return this;
+        }
+
+        public ListingBuilder setDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public ListingBuilder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
         }
 
         public Listing build() {
