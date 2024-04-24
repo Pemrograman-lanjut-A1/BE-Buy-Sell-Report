@@ -17,12 +17,16 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public Listing create(Listing listing){
+        listingRepository.create(listing);
         return listing;
     }
 
     @Override
     public List<Listing> findAll(){
-        return null;
+        Iterator<Listing> listingIterator = listingRepository.findAll();
+        List<Listing> allListing = new ArrayList<>();
+        listingIterator.forEachRemaining(allListing::add);
+        return allListing;
     }
 
     @Override
