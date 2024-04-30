@@ -14,6 +14,7 @@ class ListingTest {
         this.listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
+                .setSellerId("FakeSellerId")
                 .build();
     }
     @Test
@@ -44,6 +45,11 @@ class ListingTest {
     @Test
     void testGetListingStock(){
         assertEquals(99, this.listing.getStock());
+    }
+
+    @Test
+    void testGetListingSeller(){
+        assertEquals("FakeSellerId", this.listing.getSellerId());
     }
 
     @Test

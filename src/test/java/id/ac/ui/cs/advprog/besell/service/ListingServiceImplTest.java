@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,10 +36,10 @@ class ListingServiceImplTest {
                 .setImageUrl("google.com")
                 .build();
 
-        Mockito.when(listingRepository.create(listing)).thenReturn(listing);
+        Mockito.when(listingRepository.save(listing)).thenReturn(listing);
         listingService.create(listing);
 
-        Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing).iterator());
+        Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing));
         List<Listing> listingList = listingService.findAll();
 
         assertFalse(listingList.isEmpty());
@@ -51,7 +52,7 @@ class ListingServiceImplTest {
     @Test
     void testFindAllIfEmpty() {
         List<Listing> listingList = new ArrayList<>();
-        Mockito.when(listingRepository.findAll()).thenReturn(listingList.iterator());
+        Mockito.when(listingRepository.findAll()).thenReturn(listingList);
 
         List<Listing> listings = listingService.findAll();
 
@@ -66,25 +67,23 @@ class ListingServiceImplTest {
                 .setImageUrl("google.com")
                 .build();
 
-        Mockito.when(listingRepository.create(listing1)).thenReturn(listing1);
+        Mockito.when(listingRepository.save(listing1)).thenReturn(listing1);
         listingService.create(listing1);
 
         Listing listing2 = builder.setStock(99)
                 .setDescription("The color of the jeans is blue")
                 .setImageUrl("bluejeans.com")
                 .build();
-        Mockito.when(listingRepository.create(listing2)).thenReturn(listing2);
+        Mockito.when(listingRepository.save(listing2)).thenReturn(listing2);
         listingService.create(listing2);
 
-        Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing1, listing2).iterator());
+        Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing1, listing2));
         List<Listing> listingList = listingService.findAll();
 
         assertFalse(listingList.isEmpty());
-        Listing savedListing = listingList.removeFirst();
-        assertEquals(listing1.getId(), savedListing.getId());
-        savedListing = listingList.removeFirst();
-        assertEquals(listing2.getId(), savedListing.getId());
-        assertTrue(listingList.isEmpty());
+        assertEquals(listing1.getId(), listingList.getFirst().getId());
+        assertEquals(listing2.getId(), listingList.get(1).getId());
+        assertFalse(listingList.isEmpty());
     }
 
     @Test
@@ -94,19 +93,23 @@ class ListingServiceImplTest {
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
                 .build();
-
-        Mockito.when(listingRepository.create(listing)).thenReturn(listing);
+        listing.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Mockito.when(listingRepository.save(listing)).thenReturn(listing);
         listingService.create(listing);
 
-        Listing editedListing = listing;
-        editedListing.setName("Blue Jeans");
+        builder = new Listing.ListingBuilder("Blue Jeans", 12000);
+        Listing editedListing = builder.setStock(99)
+                .setDescription("The color of the sweater is red")
+                .setImageUrl("google.com")
+                .build();
+        editedListing.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         listingService.update(editedListing);
 
-        Mockito.when(listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(editedListing);
-        Listing resultListing = listingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Mockito.when(listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(Optional.of(editedListing));
+        Optional<Listing> resultListing = listingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
 
-        assertEquals(editedListing, resultListing);
-        Mockito.verify(listingRepository).update(editedListing);
+        assertEquals(editedListing, resultListing.get());
+        Mockito.verify(listingRepository).save(editedListing);
     }
 
     @Test
@@ -117,11 +120,11 @@ class ListingServiceImplTest {
                 .setImageUrl("google.com")
                 .build();
 
-        Mockito.when(listingRepository.create(listing1)).thenReturn(listing1);
+        Mockito.when(listingRepository.save(listing1)).thenReturn(listing1);
         listingService.create(listing1);
 
-        listingService.delete(listing1);
+        listingService.delete(listing1.getId());
 
-        Mockito.verify(listingRepository).delete(listing1);
+        Mockito.verify(listingRepository).deleteById(listing1.getId());
     }
 }
