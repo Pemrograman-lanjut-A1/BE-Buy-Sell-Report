@@ -4,13 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter @Setter
 @Entity
 @Table(name = "listing")
 public class Listing {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String name;
@@ -24,7 +23,6 @@ public class Listing {
 
     }
     public Listing(ListingBuilder builder){
-        this.id = UUID.randomUUID().toString();
         this.name = builder.name;
         this.price = builder.price;
         this.stock = builder.stock;
