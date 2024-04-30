@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ListingServiceImpl implements ListingService {
@@ -17,32 +18,31 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public Listing create(Listing listing){
-        listingRepository.create(listing);
+        listingRepository.save(listing);
         return listing;
     }
 
     @Override
     public List<Listing> findAll(){
-        Iterator<Listing> listingIterator = listingRepository.findAll();
-        List<Listing> allListing = new ArrayList<>();
-        listingIterator.forEachRemaining(allListing::add);
-        return allListing;
+//        Iterator<Listing> listingIterator = listingRepository.findAll();
+//        List<Listing> allListing = new ArrayList<>();
+//        listingIterator.forEachRemaining(allListing::add);
+        return listingRepository.findAll();
     }
 
     @Override
-    public Listing delete(Listing listing){
-        listingRepository.delete(listing);
-        return listing;
+    public void delete(String id){
+        listingRepository.deleteById(id);
     }
 
     @Override
     public Listing update(Listing listing){
-        listingRepository.update(listing);
+        listingRepository.save(listing);
         return listing;
     }
 
     @Override
-    public Listing findById(String id){
+    public Optional<Listing> findById(String id){
         return listingRepository.findById(id);
     }
 }
