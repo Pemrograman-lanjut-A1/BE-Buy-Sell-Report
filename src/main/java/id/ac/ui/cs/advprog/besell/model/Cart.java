@@ -18,16 +18,6 @@ public class Cart {
         this.price = builder.price;
     }
 
-    @Override
-    public String toString() {
-        return "Cart{" +
-                "productId='" + productId + '\'' +
-                ", productName='" + productName + '\'' +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                '}';
-    }
-
     public static class Builder {
         private final String productId;
         private final String productName;

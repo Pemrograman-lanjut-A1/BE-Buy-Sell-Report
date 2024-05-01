@@ -8,7 +8,6 @@ public class CartRepositoryTest {
 
     @Test
     public void testAddItemToCart() {
-        // Given
         CartRepository cartRepository = new CartRepository();
         Cart cartItem = new Cart.Builder("123", "Product A")
                 .quantity(2)

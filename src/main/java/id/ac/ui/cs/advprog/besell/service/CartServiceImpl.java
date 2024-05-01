@@ -1,4 +1,3 @@
-// CartServiceImpl.java
 package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Cart;
@@ -14,7 +13,7 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Override
-    public Cart addItemToCart() {
+    public Cart addItemToCart(Cart cartItem) {
         return null;
     }
 

@@ -28,20 +28,14 @@ public class CartServiceImplTest {
 
     @Test
     public void testGetCartItems() {
-        // Mocking behavior of CartRepository
         when(cartRepository.getCartItems()).thenReturn(Collections.singletonList(new Cart.Builder("123", "Product A").build()));
 
-        // Calling the method to be tested
         List<Cart> cartItems = cartService.getCartItems();
 
-        // Verifying the result
         assertEquals(1, cartItems.size());
         assertEquals("123", cartItems.get(0).getProductId());
         assertEquals("Product A", cartItems.get(0).getProductName());
 
-        // Verifying that CartRepository's method was called
         verify(cartRepository, times(1)).getCartItems();
     }
-
-    // Write more tests for CartServiceImpl methods here
 }

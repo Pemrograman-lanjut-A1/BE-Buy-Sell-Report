@@ -36,7 +36,7 @@ public class CartControllerTest {
                 .price(10.0)
                 .build();
         ResponseEntity<String> responseEntity = cartController.addItemToCart(cartItem);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals("Item added to cart", responseEntity.getBody());
     }
 
