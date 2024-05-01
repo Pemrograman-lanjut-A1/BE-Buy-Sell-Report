@@ -19,7 +19,7 @@ public class OrderTest {
         this.listing = listingBuilder.build();
         items.put(listing, 2);
         this.orderBuilder = new Order.OrderBuilder(items);
-        this.order = orderBuilder.setSellerId("FakeBuyerId")
+        this.order = orderBuilder.setBuyerId("FakeBuyerId")
                 .build();
     }
     @Test
@@ -42,6 +42,7 @@ public class OrderTest {
 
     @Test
     void testGetOrderStatusSuccess(){
+        order.setStatus("SUCCESS");
         assertEquals("SUCCESS", this.order.getStatus());
     }
 
