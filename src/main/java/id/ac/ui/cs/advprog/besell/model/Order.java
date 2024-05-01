@@ -9,10 +9,14 @@ import java.util.Map;
 import java.util.UUID;
 
 @Getter @Setter
+@Entity
+@Table(name = "order")
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private Map<Listing, Integer> items;
+    private String itemId;
     private String status;
     private String buyerId;
 
@@ -21,7 +25,7 @@ public class Order {
     }
     public Order(Order.OrderBuilder builder){
         this.id = UUID.randomUUID().toString();
-        this.items = builder.items;
+        this.itemId = builder.itemId;
         this.status = builder.status;
         this.buyerId = builder.buyerId;
     }
@@ -36,14 +40,14 @@ public class Order {
 
     public static class OrderBuilder {
         // Required parameters
-        private Map<Listing, Integer> items;
+        private String itemId;
 
         // Optional parameters
         private String status;
         private String buyerId;
 
-        public OrderBuilder(Map<Listing, Integer> items) {
-            this.items = items;
+        public OrderBuilder(String itemId) {
+            this.itemId = itemId;
             this.status = OrderStatus.WAITING_PAYMENT.getValue();
         }
 

@@ -14,7 +14,7 @@ public class OrderTest {
     void SetUp(){
         Listing.ListingBuilder listingBuilder = new Listing.ListingBuilder("Red Sweater", 12000);
         this.listing = listingBuilder.build();
-        this.orderBuilder = new Order.OrderBuilder(listing);
+        this.orderBuilder = new Order.OrderBuilder(listing.getId());
         this.order = orderBuilder.setBuyerId("FakeBuyerId")
                 .build();
     }
@@ -24,8 +24,8 @@ public class OrderTest {
     }
 
     @Test
-    void testGetOrderItem(){
-        assertEquals(listing, this.order.getItem());
+    void testGetOrderItemId(){
+        assertEquals(listing.getId(), this.order.getItemId());
     }
 
     @Test
