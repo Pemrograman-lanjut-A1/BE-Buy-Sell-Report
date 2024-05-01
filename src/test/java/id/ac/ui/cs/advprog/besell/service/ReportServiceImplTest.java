@@ -74,7 +74,12 @@ public class ReportServiceImplTest {
         assertNotNull(createdReport);
         assertEquals("New Report", createdReport.getDescription());
     }
-
+    @Test
+    public void testDeleteReport() {
+        doNothing().when(reportRepository).deleteById("1");
+        reportService.deleteReport("1");
+        verify(reportRepository).deleteById("1");
+    }
     @Test
     void testFindReportById_NotFound() {
         when(reportRepository.findById("1")).thenReturn(Optional.empty());
@@ -83,7 +88,16 @@ public class ReportServiceImplTest {
 
         assertTrue(report.isEmpty());
     }
-
+    @Test
+    public void testFindReportById() {
+        Report report = new Report();
+        report.setId("1");
+        report.setDescription("Sample report");
+        when(reportRepository.findById("1")).thenReturn(Optional.of(report));
+        Optional<Report> foundReport = reportService.findReportById("1");
+        assertTrue(foundReport.isPresent());
+        assertEquals("Sample report", foundReport.get().getDescription());
+    }
     @Test
     void testFindReportsByItemId() {
         Report report = new Report();
@@ -95,6 +109,25 @@ public class ReportServiceImplTest {
         assertEquals(1, reports.size());
         verify(reportContext).loadReports("item1");
     }
-
+    @Test
+    public void testFindReportsByUserId() {
+        Report report = new Report();
+        report.setId("1");
+        report.setDescription("Sample report");
+        when(reportContext.loadReports("user1")).thenReturn(Arrays.asList(report));
+        List<Report> reports = reportService.findReportsByUserId("user1");
+        assertFalse(reports.isEmpty());
+        assertEquals(1, reports.size());
+    }
+    @Test
+    public void testFindReportsByAuthorId() {
+        Report report = new Report();
+        report.setId("1");
+        report.setDescription("Sample report");
+        when(reportContext.loadReports("author1")).thenReturn(Arrays.asList(report));
+        List<Report> reports = reportService.findReportsByAuthorId("author1");
+        assertFalse(reports.isEmpty());
+        assertEquals(1, reports.size());
+    }
 }
 
