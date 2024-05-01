@@ -34,12 +34,12 @@ class ItemReportStrategyTest {
     void testFetchReports() {
         String itemId = "a2c62328-4a37-4664-83c7-f32db8620155";
         List<Report> mockReports = Arrays.asList(new Report("123","345","desc", LocalDateTime.now(), itemId, ReportTargetType.ITEM), new Report("123","345","desc", LocalDateTime.now(), itemId, ReportTargetType.ITEM));
-        when(reportRepository.findReportsByItemId(itemId)).thenReturn(mockReports);
+        when(reportRepository.findByTargetId(itemId)).thenReturn(mockReports);
 
-        List<Report> reports = itemReportStrategy.execute(itemId);
+        List<Report> reports = itemReportStrategy.fetchReports(itemId);
 
         assertNotNull(reports);
         assertEquals(2, reports.size());
-        verify(reportRepository).findReportsByItemId(itemId);
+        verify(reportRepository).findByTargetId(itemId);
     }
 }
