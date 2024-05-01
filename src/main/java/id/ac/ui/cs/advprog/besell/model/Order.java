@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.besell.model;
 
+import id.ac.ui.cs.advprog.besell.enums.OrderStatus;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +11,7 @@ import java.util.UUID;
 @Getter @Setter
 public class Order {
     private String id;
+
     private Map<Listing, Integer> items;
     private String status;
     private String buyerId;
@@ -23,6 +26,14 @@ public class Order {
         this.buyerId = builder.buyerId;
     }
 
+    public void setStatus(String status) {
+        if(OrderStatus.contains(status)){
+            this.status = status;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public static class OrderBuilder {
         // Required parameters
         private Map<Listing, Integer> items;
@@ -33,7 +44,7 @@ public class Order {
 
         public OrderBuilder(Map<Listing, Integer> items) {
             this.items = items;
-            this.status = "WAITING_PAYMENT";
+            this.status = OrderStatus.WAITING_PAYMENT.getValue();
         }
 
         public Order.OrderBuilder setStatus(String status) {

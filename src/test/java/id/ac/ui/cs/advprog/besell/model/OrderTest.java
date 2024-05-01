@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.besell.model;
 
+import id.ac.ui.cs.advprog.besell.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,13 +38,13 @@ public class OrderTest {
 
     @Test
     void testGetOrderStatusDefault(){
-        assertEquals("WAITING_PAYMENT", this.order.getStatus());
+        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), this.order.getStatus());
     }
 
     @Test
     void testGetOrderStatusSuccess(){
         order.setStatus("SUCCESS");
-        assertEquals("SUCCESS", this.order.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), this.order.getStatus());
     }
 
     @Test
