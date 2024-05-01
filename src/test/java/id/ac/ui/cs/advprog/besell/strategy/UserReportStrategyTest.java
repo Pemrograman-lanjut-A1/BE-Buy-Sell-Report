@@ -28,15 +28,15 @@ public class UserReportStrategyTest {
     }
 
     @Test
-    public void testExecute() {
+    public void testFetchReports() {
         String userId = "123";
         List<Report> expectedReports = Collections.singletonList(new Report("222","345","desc", LocalDateTime.now(), userId, ReportTargetType.USER));
-        when(reportRepository.findByUserId(userId)).thenReturn(expectedReports);
+        when(reportRepository.findByTargetId(userId)).thenReturn(expectedReports);
 
-        List<Report> reports = userReportStrategy.execute(userId);
+        List<Report> reports = userReportStrategy.fetchReports(userId);
 
         assertNotNull(reports);
         assertEquals(1, reports.size());
-        verify(reportRepository).findByUserId(userId);
+        verify(reportRepository).findByTargetId(userId);
     }
 }
