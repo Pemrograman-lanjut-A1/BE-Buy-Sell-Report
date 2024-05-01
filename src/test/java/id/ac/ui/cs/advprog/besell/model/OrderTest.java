@@ -4,9 +4,6 @@ import id.ac.ui.cs.advprog.besell.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 public class OrderTest {
     Order order;
@@ -15,11 +12,9 @@ public class OrderTest {
 
     @BeforeEach
     void SetUp(){
-        Map<Listing, Integer> items = new HashMap<>();
         Listing.ListingBuilder listingBuilder = new Listing.ListingBuilder("Red Sweater", 12000);
         this.listing = listingBuilder.build();
-        items.put(listing, 2);
-        this.orderBuilder = new Order.OrderBuilder(items);
+        this.orderBuilder = new Order.OrderBuilder(listing);
         this.order = orderBuilder.setBuyerId("FakeBuyerId")
                 .build();
     }
@@ -29,11 +24,8 @@ public class OrderTest {
     }
 
     @Test
-    void testGetOrderItems(){
-        Map<Listing, Integer> items = this.order.getItems();
-        assertFalse(items.isEmpty());
-        assertTrue(items.containsKey(listing));
-        assertTrue(items.containsValue(2));
+    void testGetOrderItem(){
+        assertEquals(listing, this.order.getItem());
     }
 
     @Test
