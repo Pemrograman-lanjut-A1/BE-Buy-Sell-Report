@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +31,7 @@ class ListingServiceImplTest {
     }
 
     @Test
-    void testCreateAndFind() {
+    void testCreateAndFind() throws ExecutionException, InterruptedException{
         Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
         Listing listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
@@ -40,7 +42,8 @@ class ListingServiceImplTest {
         listingService.create(listing);
 
         Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing));
-        List<Listing> listingList = listingService.findAll();
+        CompletableFuture<List<Listing>> listingListFuture = listingService.findAll();
+        List<Listing> listingList = listingListFuture.get();
 
         assertFalse(listingList.isEmpty());
         Listing savedListing = listingList.getFirst();
@@ -50,17 +53,18 @@ class ListingServiceImplTest {
     }
 
     @Test
-    void testFindAllIfEmpty() {
+    void testFindAllIfEmpty() throws ExecutionException, InterruptedException {
         List<Listing> listingList = new ArrayList<>();
         Mockito.when(listingRepository.findAll()).thenReturn(listingList);
 
-        List<Listing> listings = listingService.findAll();
+        CompletableFuture<List<Listing>> listingsFuture = listingService.findAll();
+        List<Listing> listings = listingsFuture.get();
 
         assertTrue(listings.isEmpty());
     }
 
     @Test
-    void testFindAllIfMoreThanOneListing() {
+    void testFindAllIfMoreThanOneListing() throws ExecutionException, InterruptedException {
         Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
         Listing listing1 = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
@@ -78,7 +82,8 @@ class ListingServiceImplTest {
         listingService.create(listing2);
 
         Mockito.when(listingRepository.findAll()).thenReturn(List.of(listing1, listing2));
-        List<Listing> listingList = listingService.findAll();
+        CompletableFuture<List<Listing>> listingListFuture = listingService.findAll();
+        List<Listing> listingList = listingListFuture.get();
 
         assertFalse(listingList.isEmpty());
         assertEquals(listing1.getId(), listingList.getFirst().getId());
@@ -87,7 +92,7 @@ class ListingServiceImplTest {
     }
 
     @Test
-    void testEditListing() {
+    void testEditListing() throws ExecutionException, InterruptedException {
         Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
         Listing listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
@@ -106,7 +111,8 @@ class ListingServiceImplTest {
         listingService.update(editedListing);
 
         Mockito.when(listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(Optional.of(editedListing));
-        Optional<Listing> resultListing = listingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        CompletableFuture<Optional<Listing>> resultListingFuture = listingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Optional<Listing> resultListing = resultListingFuture.get();
 
         assertEquals(editedListing, resultListing.get());
         Mockito.verify(listingRepository).save(editedListing);
