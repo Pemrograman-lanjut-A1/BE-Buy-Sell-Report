@@ -2,7 +2,9 @@ package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Report;
 import id.ac.ui.cs.advprog.besell.repository.ReportRepository;
+import id.ac.ui.cs.advprog.besell.strategy.ItemReportStrategy;
 import id.ac.ui.cs.advprog.besell.strategy.ReportContext;
+import id.ac.ui.cs.advprog.besell.strategy.UserReportStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,11 +53,13 @@ public class ReportServiceImpl implements ReportService{
 
     @Override
     public List<Report> findReportsByItemId(String itemId) {
+        reportContext.setReportStrategy(new ItemReportStrategy(reportRepository));
         return reportContext.loadReports(itemId);
     }
 
     @Override
     public List<Report> findReportsByUserId(String userId) {
+        reportContext.setReportStrategy(new UserReportStrategy(reportRepository));
         return reportContext.loadReports(userId);
     }
 
