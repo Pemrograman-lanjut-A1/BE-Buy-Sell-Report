@@ -9,8 +9,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class CartServiceImplTest {
@@ -37,5 +40,24 @@ public class CartServiceImplTest {
         assertEquals("Product A", cartItems.get(0).getProductName());
 
         verify(cartRepository, times(1)).getCartItems();
+    }
+
+    @Test
+    void testAddItemToCart() throws ExecutionException, InterruptedException {
+        Cart cartItem = new Cart.Builder("1", "Product A")
+                .quantity(1)
+                .price(10.0)
+                .build();
+
+        when(cartRepository.addItemToCart(cartItem)).thenReturn(cartItem);
+
+        CompletableFuture<Cart> result = cartService.addItemToCart(cartItem);
+        Cart addedItem = result.get(); // Wait for the asynchronous operation to complete
+
+        assertNotNull(addedItem);
+        assertEquals("1", addedItem.getProductId());
+        assertEquals("Product A", addedItem.getProductName());
+        assertEquals(1, addedItem.getQuantity());
+        assertEquals(10.0, addedItem.getPrice());
     }
 }
