@@ -3,9 +3,11 @@ package id.ac.ui.cs.advprog.besell.service;
 import id.ac.ui.cs.advprog.besell.model.Cart;
 import id.ac.ui.cs.advprog.besell.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -13,8 +15,9 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Override
-    public Cart addItemToCart(Cart cartItem) {
-        return null;
+    @Async
+    public CompletableFuture<Cart> addItemToCart(Cart cartItem) {
+        return CompletableFuture.completedFuture(cartRepository.addItemToCart(cartItem));
     }
 
     @Override
