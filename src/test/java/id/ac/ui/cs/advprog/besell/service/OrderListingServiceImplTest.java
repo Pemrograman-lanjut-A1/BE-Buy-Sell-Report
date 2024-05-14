@@ -76,12 +76,12 @@ class OrderListingServiceImplTest {
         editedOrderListing.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         editedOrderListing.setListingId("Sampo Cap Bango");
         editedOrderListing.setQuantity(0);
-        orderListingService.edit(editedOrderListing);
+        orderListingService.update(editedOrderListing);
 
         Mockito.when(orderListingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(Optional.of(editedOrderListing));
-        OrderListing resultOrderListing = orderListingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Optional<OrderListing> resultOrderListing = orderListingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
 
-        assertEquals(editedOrderListing, resultOrderListing);
+        assertEquals(editedOrderListing, resultOrderListing.get());
         Mockito.verify(orderListingRepository).save(editedOrderListing);
     }
 
@@ -95,8 +95,8 @@ class OrderListingServiceImplTest {
         Mockito.when(orderListingRepository.save(orderListing1)).thenReturn(orderListing1);
         orderListingService.create(orderListing1);
 
-        orderListingService.delete(orderListing1);
+        orderListingService.delete(orderListing1.getOrderId());
 
-        Mockito.verify(orderListingRepository).delete(orderListing1);
+        Mockito.verify(orderListingRepository).deleteById(orderListing1.getOrderId());
     }
 }
