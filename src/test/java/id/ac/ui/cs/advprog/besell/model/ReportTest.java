@@ -19,6 +19,7 @@ public class ReportTest {
         String targetId = "a2c62328-4a37-4664-83c7-f32db8620155";
         report = new Report("eb558e9f-1c39-460e-8860-71af6af63bd6", authorId,
                 "Barang ini tidak sesuai", dateCreated, targetId, ReportTargetType.ITEM);
+        report.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         assertEquals(report.getId(), "eb558e9f-1c39-460e-8860-71af6af63bd6");
         assertEquals(report.getDescription(), "Barang ini tidak sesuai");
         assertEquals(report.getAuthorId(), "13652556-012a-4c07-b546-54eb1396d79b");
@@ -67,6 +68,20 @@ public class ReportTest {
                 "Deskripsi report", LocalDateTime.now(),"a2c62328-4a37-4664-83c7-f32db8620155", ReportTargetType.ITEM);
         assertThrows(IllegalArgumentException.class, () -> {
             report.setDescription(deskripsiTest);
+        });
+    }
+
+    @Test
+    void testEmptyAuthorId() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            report = new Report("123", "", "deskripsi", LocalDateTime.now(), "4444", ReportTargetType.ITEM);
+        });
+    }
+
+    @Test
+    void testEmptyTargetId() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            report = new Report("123", "142142", "deskripsi", LocalDateTime.now(), "", ReportTargetType.ITEM);
         });
     }
 }
