@@ -26,10 +26,10 @@ public class Report {
     public Report(String id, String authorId, String description,
                   LocalDateTime reportDate, String targetId, ReportTargetType targetType) {
         this.id = UUID.randomUUID().toString();
-        this.authorId = authorId;
+        setAuthorId(authorId);
         setDescription(description);
-        this.reportDate = reportDate;
-        this.targetId = targetId;
+        setReportDate(LocalDateTime.now());
+        setTargetId(targetId);
         this.targetType = targetType;
     }
 
@@ -38,9 +38,23 @@ public class Report {
     }
 
     public void setDescription(String description) {
-        if (description.isEmpty()) {
+        if (description == null || description.isEmpty()) {
             throw new IllegalArgumentException("Description cannot be empty");
         }
         this.description = description;
+    }
+
+    public void setAuthorId(String authorId) {
+        if (authorId == null || authorId.isEmpty()) {
+            throw new IllegalArgumentException("Null authorId");
+        }
+        this.authorId = authorId;
+    }
+
+    public void setTargetId(String targetId) {
+        if (targetId == null || targetId.isEmpty()) {
+            throw new IllegalArgumentException("Null targetId");
+        }
+        this.targetId = targetId;
     }
 }
