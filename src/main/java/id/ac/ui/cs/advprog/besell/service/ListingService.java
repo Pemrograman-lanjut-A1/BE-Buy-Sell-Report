@@ -10,5 +10,6 @@ public interface ListingService {
     CompletableFuture<List<Listing>> findAll();
     CompletableFuture<Void> delete(String id);
     CompletableFuture<Optional<Listing>> findById(String id);
+    CompletableFuture<List<Listing>> findBySellerId(String id);
     CompletableFuture<Listing> update(Listing listing);
 }

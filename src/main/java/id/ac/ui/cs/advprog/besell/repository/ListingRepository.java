@@ -10,4 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ListingRepository extends JpaRepository<Listing, String> {
+    List<Listing> findBySellerId(String id);
 }

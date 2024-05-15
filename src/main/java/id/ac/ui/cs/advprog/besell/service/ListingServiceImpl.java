@@ -52,4 +52,9 @@ public class ListingServiceImpl implements ListingService {
 
         return CompletableFuture.completedFuture(listingRepository.findById(id));
     }
+    @Override
+    @Async
+    public CompletableFuture<List<Listing>> findBySellerId(String id){
+        return CompletableFuture.completedFuture(listingRepository.findBySellerId(id));
+    }
 }
