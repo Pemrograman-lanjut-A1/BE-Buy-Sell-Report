@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
+import id.ac.ui.cs.advprog.besell.enums.ReportTargetType;
 import id.ac.ui.cs.advprog.besell.model.Report;
 import id.ac.ui.cs.advprog.besell.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,11 @@ public class ReportController {
     ReportService reportService;
     @PostMapping("/create")
     public ResponseEntity<Report> createReport(@RequestBody Report report) {
+        if (report.getTargetType().equals(ReportTargetType.USER)) {
+            report.setTargetType(ReportTargetType.USER);
+        } else {
+            report.setTargetType(ReportTargetType.ITEM);
+        }
         return new ResponseEntity<>(reportService.createReport(report), HttpStatus.CREATED);
     }
 
