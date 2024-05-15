@@ -12,13 +12,25 @@ import java.util.UUID;
 public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
     private String id;
 
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "price", nullable = false)
     private int price;
+
+    @Column(name = "stock")
     private int stock;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(name = "seller_id")
     private String sellerId;
 
     public Listing(){
