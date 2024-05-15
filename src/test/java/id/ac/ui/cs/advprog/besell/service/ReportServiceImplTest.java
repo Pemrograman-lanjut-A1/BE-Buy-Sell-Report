@@ -14,6 +14,7 @@ import id.ac.ui.cs.advprog.besell.strategy.ReportContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ReportServiceImplTest {
 
@@ -128,6 +129,52 @@ public class ReportServiceImplTest {
         List<Report> reports = reportService.findReportsByAuthorId("author1");
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
+    }
+
+    @Test
+    void testFindAll_Empty() {
+        when(reportRepository.findAll()).thenReturn(List.of());
+
+        List<Report> reports = reportService.findAll();
+
+        assertTrue(reports.isEmpty());
+        verify(reportRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindReportsByItemId_NoReportsFound() {
+        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+
+        List<Report> reports = reportService.findReportsByItemId("nonExistingItemId");
+
+        assertTrue(reports.isEmpty());
+        verify(reportContext, times(1)).loadReports(anyString());
+    }
+
+    @Test
+    void testFindReportsByUserId_NoReportsFound() {
+        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+
+        List<Report> reports = reportService.findReportsByUserId("nonExistingUserId");
+
+        assertTrue(reports.isEmpty());
+        verify(reportContext, times(1)).loadReports(anyString());
+    }
+
+    @Test
+    void testFindReportsByAuthorId_NoReportsFound() {
+        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+
+        List<Report> reports = reportService.findReportsByAuthorId("nonExistingAuthorId");
+
+        assertTrue(reports.isEmpty());
+        verify(reportContext, times(1)).loadReports(anyString());
+    }
+    @Test
+    void testDeleteReport_NotFound() {
+        doThrow(new IllegalArgumentException("Report not found")).when(reportRepository).deleteById(anyString());
+
+        assertThrows(IllegalArgumentException.class, () -> reportService.deleteReport(UUID.randomUUID().toString()));
     }
 }
 
