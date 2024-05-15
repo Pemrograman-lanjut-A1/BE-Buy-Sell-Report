@@ -101,4 +101,23 @@ public class OrderListingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/order/{id}")
+    public ResponseEntity<?> findByOrderId(@PathVariable("id") String id){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<OrderListing> orderListing = orderListingService.findByOrderId(id);
+            if (orderListing.isEmpty()){
+                response.put("code", HttpStatus.NOT_FOUND.value());
+                response.put("message", "OrderListing with ID " + id + " not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            return ResponseEntity.ok(orderListing);
+        }catch (Exception e){
+            response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("error", e.getMessage());
+            response.put("message", "Something Wrong With Server");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

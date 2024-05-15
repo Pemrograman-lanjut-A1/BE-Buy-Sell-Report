@@ -36,6 +36,11 @@ public class OrderListingServiceImpl implements OrderListingService{
     }
 
     @Override
+    public List<OrderListing> findByOrderId(String id) {
+        return orderListingRepository.findByOrderId(id);
+    }
+
+    @Override
     public OrderListing update(OrderListing order) {
         orderListingRepository.save(order);
         return order;

@@ -11,5 +11,6 @@ public interface OrderListingService {
     List<OrderListing> findAll();
     void delete(String id);
     Optional<OrderListing> findById(String id);
+    List<OrderListing> findByOrderId(String id);
     OrderListing update(OrderListing order);
 }
