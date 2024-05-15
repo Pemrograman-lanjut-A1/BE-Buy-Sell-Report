@@ -8,35 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ListingRepoTest {
-    @InjectMocks
-    ListingRepository listingRepository;
-    @BeforeEach
-    void SetUp(){
-
-    }
-
-    @Test
-    void testCreateAndFind() {
-    }
-
-    @Test
-    void testFindAllIfEmpty() {
-    }
-
-    @Test
-    void testFindAllIfMoreThanOneListing() {
-    }
-
-    @Test
-    void testEditListing() {
-    }
-
-    @Test
-    void testDeleteListing() {
-    }
 }

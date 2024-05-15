@@ -4,41 +4,57 @@ package id.ac.ui.cs.advprog.besell.service;
 import id.ac.ui.cs.advprog.besell.model.Listing;
 import id.ac.ui.cs.advprog.besell.repository.ListingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ListingServiceImpl implements ListingService {
+
     @Autowired
     private ListingRepository listingRepository;
 
     @Override
-    public Listing create(Listing listing){
-        return listing;
+    @Async
+    public CompletableFuture<Listing> create(Listing listing){
+        listingRepository.save(listing);
+        return CompletableFuture.completedFuture(listing);
     }
 
     @Override
-    public List<Listing> findAll(){
-        return null;
+    @Async
+    public CompletableFuture<List<Listing>> findAll(){
+        return CompletableFuture.completedFuture(listingRepository.findAll());
     }
 
     @Override
-    public Listing delete(Listing listing){
-        listingRepository.delete(listing);
-        return listing;
+    @Async
+    public CompletableFuture<Void> delete(String id){
+        listingRepository.deleteById(id);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public Listing update(Listing listing){
-        listingRepository.update(listing);
-        return listing;
+    @Async
+    public CompletableFuture<Listing> update(Listing listing){
+        listingRepository.save(listing);
+        return CompletableFuture.completedFuture(listing);
     }
 
     @Override
-    public Listing findById(String id){
-        return listingRepository.findById(id);
+    @Async
+    public CompletableFuture<Optional<Listing>> findById(String id){
+
+        return CompletableFuture.completedFuture(listingRepository.findById(id));
+    }
+    @Override
+    @Async
+    public CompletableFuture<List<Listing>> findBySellerId(String id){
+        return CompletableFuture.completedFuture(listingRepository.findBySellerId(id));
     }
 }
