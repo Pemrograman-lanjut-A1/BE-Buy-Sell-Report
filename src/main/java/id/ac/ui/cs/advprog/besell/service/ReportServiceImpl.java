@@ -8,6 +8,7 @@ import id.ac.ui.cs.advprog.besell.strategy.UserReportStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ public class ReportServiceImpl implements ReportService{
     private ReportContext reportContext;
 
     public Report createReport(Report report) {
+        report.setReportDate(LocalDateTime.now());
         reportRepository.save(report);
         return report;
     }
@@ -28,6 +30,7 @@ public class ReportServiceImpl implements ReportService{
         return reportRepository.findById(id)
                 .map(report -> {
                     report.setDescription(reportDetails.getDescription());
+                    report.setReportDate(reportDetails.getReportDate());
                     return reportRepository.save(report);
                 })
                 .orElseGet(() -> {
