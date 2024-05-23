@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.besell.model;
 
 import id.ac.ui.cs.advprog.besell.enums.OrderStatus;
+import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,10 +27,10 @@ public class Order {
     public Order(){
 
     }
-    public Order(Order.OrderBuilder builder){
+    public Order(OrderBuilder builder){
         this.id = UUID.randomUUID().toString();
-        this.status = builder.status;
-        this.buyerId = builder.buyerId;
+        this.status = builder.getStatus();
+        this.buyerId = builder.getBuyerId();
     }
 
     public void setStatus(String status) {
@@ -37,33 +38,6 @@ public class Order {
             this.status = status;
         } else {
             throw new IllegalArgumentException();
-        }
-    }
-
-    public static class OrderBuilder {
-        // Required parameters
-        private String buyerId;
-
-        // Optional parameters
-        private String status;
-
-        public OrderBuilder(String buyerId) {
-            this.buyerId = buyerId;
-            this.status = OrderStatus.WAITING_PAYMENT.getValue();
-        }
-
-        public Order.OrderBuilder setStatus(String status) {
-            this.status = status;
-            return this;
-        }
-
-        public Order.OrderBuilder setBuyerId(String buyerId) {
-            this.buyerId = buyerId;
-            return this;
-        }
-
-        public Order build() {
-            return new Order(this);
         }
     }
 }

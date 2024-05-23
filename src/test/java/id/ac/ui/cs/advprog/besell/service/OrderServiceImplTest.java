@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Order;
+import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
 import id.ac.ui.cs.advprog.besell.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class OrderServiceImplTest {
 
     @Test
     void testCreateAndFind() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+        OrderBuilder builder = new OrderBuilder("FakeItemId");
         Order order = builder.setBuyerId("FakeBuyerId")
                 .build();
 
@@ -62,7 +63,7 @@ public class OrderServiceImplTest {
 
     @Test
     void testFindAllIfMoreThanOneOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+        OrderBuilder builder = new OrderBuilder("FakeItemId");
         Order order1 = builder.setBuyerId("FakeBuyerId")
                 .build();
 
@@ -85,14 +86,14 @@ public class OrderServiceImplTest {
 
     @Test
     void testEditOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+        OrderBuilder builder = new OrderBuilder("FakeItemId");
         Order order = builder.setBuyerId("FakeBuyerId")
                 .build();
         order.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         Mockito.when(orderRepository.save(order)).thenReturn(order);
         orderService.create(order);
 
-        builder = new Order.OrderBuilder("FakeItemId2");
+        builder = new OrderBuilder("FakeItemId2");
         Order editedOrder = builder.setBuyerId("FakeBuyerId")
                 .build();
         editedOrder.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
@@ -107,7 +108,7 @@ public class OrderServiceImplTest {
 
     @Test
     void testDeleteOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+        OrderBuilder builder = new OrderBuilder("FakeItemId");
         Order order1 = builder.setBuyerId("FakeBuyerId")
                 .build();
 
