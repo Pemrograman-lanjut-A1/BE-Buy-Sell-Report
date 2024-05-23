@@ -8,11 +8,12 @@ import lombok.Getter;
 public class OrderBuilder {
     // Required parameters
     private String buyerId;
+    private String sellerId;
 
     // Optional parameters
     private String status;
 
-    public OrderBuilder(String buyerId) {
+    public OrderBuilder(String buyerId, String sellerId) {
         this.buyerId = buyerId;
         this.status = OrderStatus.WAITING_PAYMENT.getValue();
     }
@@ -25,6 +26,11 @@ public class OrderBuilder {
     public OrderBuilder setBuyerId(String buyerId) {
         this.buyerId = buyerId;
         return this;
+    }
+
+    public OrderBuilder setSellerId(String sellerId) {
+            this.sellerId = sellerId;
+            return this;
     }
 
     public Order build() {

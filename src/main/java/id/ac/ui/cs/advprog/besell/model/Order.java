@@ -24,6 +24,9 @@ public class Order {
     @Column(name = "buyer_id", nullable = false)
     private String buyerId;
 
+    @Column(name = "seller_id", nullable = false)
+    private String sellerId;
+
     public Order(){
 
     }
@@ -31,6 +34,7 @@ public class Order {
         this.id = UUID.randomUUID().toString();
         this.status = builder.getStatus();
         this.buyerId = builder.getBuyerId();
+        this.sellerId = builder.getSellerId();
     }
 
     public void setStatus(String status) {
