@@ -16,3 +16,10 @@ perubahan dari satu service tidak akan berpengaruh pada service lain secara sign
 
 Dengan mempertimbangkan faktor-faktor tersebut, kelompok kami memilih Desain Arsitektur Microservice yang cocok dengan
 pengembangan aplikasi ini yang dinamis dan dikerjakan secara berkelompok.
+
+# Week 12
+> Narendra Dzulqarnain - 2206081881
+## Component Diagram Untuk Report
+![component diagram report.png](assets%2Fimg%2Fcomponent%20diagram%20report.png)
+## Code Diagram untuk Report
+![code diagram report.png](assets%2Fimg%2Fcode%20diagram%20report.png)
