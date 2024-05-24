@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.besell.service;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import id.ac.ui.cs.advprog.besell.enums.ReportTargetType;
 import id.ac.ui.cs.advprog.besell.model.Report;
 import id.ac.ui.cs.advprog.besell.repository.ReportRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import id.ac.ui.cs.advprog.besell.strategy.ReportContext;
+import org.springframework.web.server.ResponseStatusException;
+
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,20 +25,28 @@ public class ReportServiceImplTest {
     @Mock
     private ReportRepository reportRepository;
 
-    @Mock
-    private ReportContext reportContext;
 
     @InjectMocks
     private ReportServiceImpl reportService;
 
+    private final String authorId = UUID.randomUUID().toString();
+    private final String targetId = UUID.randomUUID().toString();
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testCreateReport_Success() {
-        Report report = new Report();
+        Report report = new Report.Builder()
+                .authorId(authorId)
+                .description("description")
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .reportDate(LocalDateTime.now())
+                .build();
+
         when(reportRepository.save(any(Report.class))).thenReturn(report);
 
         Report createdReport = reportService.createReport(report);
@@ -45,88 +57,130 @@ public class ReportServiceImplTest {
 
     @Test
     void testUpdateReport_Found() {
-        Report existingReport = new Report();
-        existingReport.setId("1");
-        existingReport.setDescription("Old Description");
+        Report existingReport = new Report.Builder()
+                .authorId(authorId)
+                .description("Old Description")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
-        Report updatedDetails = new Report();
-        updatedDetails.setDescription("New Description");
+        Report updatedDetails = new Report.Builder()
+                .authorId(authorId)
+                .description("New Description")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
-        when(reportRepository.findById("1")).thenReturn(Optional.of(existingReport));
-        when(reportRepository.save(any(Report.class))).thenReturn(updatedDetails);
+        when(reportRepository.findById(existingReport.getId())).thenReturn(Optional.of(existingReport));
+        when(reportRepository.save(any(Report.class))).thenReturn(existingReport);
 
-        Report updatedReport = reportService.updateReport("1", updatedDetails);
+        existingReport.setDescription(updatedDetails.getDescription());
+        existingReport.setReportDate(updatedDetails.getReportDate());
+
+        Report updatedReport = reportService.updateReport(existingReport.getId(), updatedDetails);
 
         assertNotNull(updatedReport);
         assertEquals("New Description", updatedReport.getDescription());
     }
 
     @Test
-    void testUpdateReport_NotFound_CreateNew() {
-        Report newReport = new Report();
-        newReport.setId("1");
-        newReport.setDescription("New Report");
+    void testUpdateReport_NotFound() {
+        Report newReport = new Report.Builder()
+                .authorId(authorId)
+                .description("New Report")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
-        when(reportRepository.findById("1")).thenReturn(Optional.empty());
-        when(reportRepository.save(any(Report.class))).thenReturn(newReport);
-
-        Report createdReport = reportService.updateReport("1", newReport);
-
-        assertNotNull(createdReport);
-        assertEquals("New Report", createdReport.getDescription());
+        when(reportRepository.findById(newReport.getId())).thenReturn(Optional.empty());
+        assertThrows(ResponseStatusException.class, () -> {
+            reportService.updateReport(newReport.getId(), newReport);
+        });
     }
+
+
     @Test
     public void testDeleteReport() {
-        doNothing().when(reportRepository).deleteById("1");
-        reportService.deleteReport("1");
-        verify(reportRepository).deleteById("1");
+        doNothing().when(reportRepository).deleteById("a2c62328-4a37-4664-83c7-f32db8620155");
+        reportService.deleteReport("a2c62328-4a37-4664-83c7-f32db8620155");
+        verify(reportRepository).deleteById("a2c62328-4a37-4664-83c7-f32db8620155");
     }
+
     @Test
     void testFindReportById_NotFound() {
-        when(reportRepository.findById("1")).thenReturn(Optional.empty());
+        when(reportRepository.findById("a2c62328-4a37-4664-83c7-f32db8620155")).thenReturn(Optional.empty());
 
-        Optional<Report> report = reportService.findReportById("1");
+        Optional<Report> report = reportService.findReportById("a2c62328-4a37-4664-83c7-f32db8620155");
 
         assertTrue(report.isEmpty());
     }
+
     @Test
     public void testFindReportById() {
-        Report report = new Report();
-        report.setId("1");
-        report.setDescription("Sample report");
-        when(reportRepository.findById("1")).thenReturn(Optional.of(report));
-        Optional<Report> foundReport = reportService.findReportById("1");
+        Report report = new Report.Builder()
+                .authorId(authorId)
+                .description("Sample report")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
+
+        when(reportRepository.findById(report.getId())).thenReturn(Optional.of(report));
+        Optional<Report> foundReport = reportService.findReportById(report.getId());
         assertTrue(foundReport.isPresent());
         assertEquals("Sample report", foundReport.get().getDescription());
     }
+
     @Test
     void testFindReportsByItemId() {
-        Report report = new Report();
-        when(reportContext.loadReports("item1")).thenReturn(Arrays.asList(report));
+        Report report = new Report.Builder()
+                .authorId(authorId)
+                .description("Sample report")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
-        List<Report> reports = reportService.findReportsByItemId("item1");
+        when(reportRepository.findByTargetId(targetId)).thenReturn(Arrays.asList(report));
+
+        List<Report> reports = reportService.findReportsByItemId(targetId);
 
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
-        verify(reportContext).loadReports("item1");
+        verify(reportRepository).findByTargetId(targetId);
     }
+
     @Test
     public void testFindReportsByUserId() {
-        Report report = new Report();
-        report.setId("1");
-        report.setDescription("Sample report");
-        when(reportContext.loadReports("user1")).thenReturn(Arrays.asList(report));
-        List<Report> reports = reportService.findReportsByUserId("user1");
+        Report report = new Report.Builder()
+                .authorId(authorId)
+                .description("Sample report")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.USER)
+                .build();
+
+        when(reportRepository.findByTargetId(targetId)).thenReturn(Arrays.asList(report));
+        List<Report> reports = reportService.findReportsByUserId(targetId);
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
     }
+
     @Test
     public void testFindReportsByAuthorId() {
-        Report report = new Report();
-        report.setId("1");
-        report.setDescription("Sample report");
-        when(reportContext.loadReports("author1")).thenReturn(Arrays.asList(report));
-        List<Report> reports = reportService.findReportsByAuthorId("author1");
+        Report report = new Report.Builder()
+                .authorId(authorId)
+                .description("Sample report")
+                .reportDate(LocalDateTime.now())
+                .targetId(targetId)
+                .targetType(ReportTargetType.ITEM)
+                .build();
+
+        when(reportRepository.findByAuthorId(authorId)).thenReturn(Arrays.asList(report));
+        List<Report> reports = reportService.findReportsByAuthorId(authorId);
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
     }
@@ -143,33 +197,34 @@ public class ReportServiceImplTest {
 
     @Test
     void testFindReportsByItemId_NoReportsFound() {
-        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+        when(reportRepository.findByTargetId(anyString())).thenReturn(List.of());
 
         List<Report> reports = reportService.findReportsByItemId("nonExistingItemId");
 
         assertTrue(reports.isEmpty());
-        verify(reportContext, times(1)).loadReports(anyString());
+        verify(reportRepository, times(1)).findByTargetId(anyString());
     }
 
     @Test
     void testFindReportsByUserId_NoReportsFound() {
-        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+        when(reportRepository.findByTargetId(anyString())).thenReturn(List.of());
 
         List<Report> reports = reportService.findReportsByUserId("nonExistingUserId");
 
         assertTrue(reports.isEmpty());
-        verify(reportContext, times(1)).loadReports(anyString());
+        verify(reportRepository, times(1)).findByTargetId(anyString());
     }
 
     @Test
     void testFindReportsByAuthorId_NoReportsFound() {
-        when(reportContext.loadReports(anyString())).thenReturn(List.of());
+        when(reportRepository.findByAuthorId(anyString())).thenReturn(List.of());
 
         List<Report> reports = reportService.findReportsByAuthorId("nonExistingAuthorId");
 
         assertTrue(reports.isEmpty());
-        verify(reportContext, times(1)).loadReports(anyString());
+        verify(reportRepository, times(1)).findByAuthorId(anyString());
     }
+
     @Test
     void testDeleteReport_NotFound() {
         doThrow(new IllegalArgumentException("Report not found")).when(reportRepository).deleteById(anyString());

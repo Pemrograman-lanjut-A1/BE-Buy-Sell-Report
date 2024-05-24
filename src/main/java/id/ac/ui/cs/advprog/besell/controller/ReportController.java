@@ -19,11 +19,6 @@ public class ReportController {
     ReportService reportService;
     @PostMapping("/create")
     public ResponseEntity<Report> createReport(@RequestBody Report report) {
-        if (report.getTargetType().equals(ReportTargetType.USER)) {
-            report.setTargetType(ReportTargetType.USER);
-        } else {
-            report.setTargetType(ReportTargetType.ITEM);
-        }
         return new ResponseEntity<>(reportService.createReport(report), HttpStatus.CREATED);
     }
 

@@ -37,12 +37,13 @@ public class ReportControllerTest {
 
     @Test
     void testCreateReport_Success() {
-        Report report = new Report();
-        report.setAuthorId("authorId");
-        report.setDescription("description");
-        report.setTargetId("targetId");
-        report.setReportDate(LocalDateTime.now());
-        report.setTargetType(ReportTargetType.ITEM);
+        Report report = new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
         when(reportService.createReport(any(Report.class))).thenReturn(report);
 
@@ -55,11 +56,13 @@ public class ReportControllerTest {
 
     @Test
     void testUpdateReport_Success() {
-        Report report = new Report();
-        report.setAuthorId("authorId");
-        report.setDescription("description");
-        report.setTargetId("targetId");
-        report.setReportDate(LocalDateTime.now());
+        Report report = new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
         when(reportService.updateReport(anyString(), any(Report.class))).thenReturn(report);
 
@@ -82,11 +85,13 @@ public class ReportControllerTest {
 
     @Test
     void testFindReportById_Success() {
-        Report report = new Report();
-        report.setAuthorId("authorId");
-        report.setDescription("description");
-        report.setTargetId("targetId");
-        report.setReportDate(LocalDateTime.now());
+        Report report = new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build();
 
         when(reportService.findReportById(anyString())).thenReturn(Optional.of(report));
 
@@ -110,8 +115,20 @@ public class ReportControllerTest {
     @Test
     void testFindAllReports_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report());
-        reports.add(new Report());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build());
 
         when(reportService.findAll()).thenReturn(reports);
 
@@ -125,12 +142,24 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByItemId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report());
-        reports.add(new Report());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build());
 
         when(reportService.findReportsByItemId(anyString())).thenReturn(reports);
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByItemId("itemId");
+        ResponseEntity<List<Report>> response = reportController.findReportsByItemId("13652556-012a-4c07-b546-54eb1396d79b");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
@@ -140,12 +169,24 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByUserId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report());
-        reports.add(new Report());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.USER)
+                .build());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.USER)
+                .build());
 
         when(reportService.findReportsByUserId(anyString())).thenReturn(reports);
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByUserId("userId");
+        ResponseEntity<List<Report>> response = reportController.findReportsByUserId("13652556-012a-4c07-b546-54eb1396d79b");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
@@ -155,12 +196,24 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByAuthorId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report());
-        reports.add(new Report());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.USER)
+                .build());
+        reports.add(new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.USER)
+                .build());
 
         when(reportService.findReportsByAuthorId(anyString())).thenReturn(reports);
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByAuthorId("authorId");
+        ResponseEntity<List<Report>> response = reportController.findReportsByAuthorId("a2c62328-4a37-4664-83c7-f32db8620155");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());

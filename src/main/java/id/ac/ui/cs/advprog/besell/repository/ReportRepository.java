@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, String> {
     public List<Report> findByTargetId(String id);
+    public List<Report> findByAuthorId(String id);
 }
