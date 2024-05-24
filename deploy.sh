@@ -4,7 +4,7 @@
 PROJECT_ID="fathanadhitama"
 IMAGE_NAME="buysellreport"
 VERSION=$1
-CONTAINER_NAME="buysellreport"
+CONTAINER_NAME="deploy-buysellreport"
 VERSION_FILE="current_version.txt"
 UPDATE_VERSION_FILE=$2
 

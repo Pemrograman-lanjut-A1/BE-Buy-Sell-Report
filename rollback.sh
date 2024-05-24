@@ -3,7 +3,7 @@
 # Variables
 PROJECT_ID="fathanadhitama"
 IMAGE_NAME="buysellreport"
-CONTAINER_NAME="buysellreport"
+CONTAINER_NAME="deploy-buysellreport"
 VERSION_FILE="current_version.txt"
 
 # Function to rollback to the previous version
