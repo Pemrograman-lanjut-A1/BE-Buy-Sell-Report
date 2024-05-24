@@ -1,16 +1,17 @@
 package id.ac.ui.cs.advprog.besell.model;
 
+import id.ac.ui.cs.advprog.besell.model.builder.ListingBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 class ListingTest {
     Listing listing;
-    Listing.ListingBuilder builder;
+    ListingBuilder builder;
 
     @BeforeEach
     void SetUp(){
-        this.builder = new Listing.ListingBuilder("Red Sweater", 12000);
+        this.builder = new ListingBuilder("Red Sweater", 12000);
         this.listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")

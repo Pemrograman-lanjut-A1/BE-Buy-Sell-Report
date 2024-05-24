@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
+import id.ac.ui.cs.advprog.besell.model.Listing;
 import id.ac.ui.cs.advprog.besell.model.Order;
 import id.ac.ui.cs.advprog.besell.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(path="/order", produces="application/json")
@@ -21,83 +20,116 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody Order order){
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> createOrder(@RequestBody Order order){
         Map<String, Object> res = new HashMap<>();
-        try{
-            Order createdOrder = orderService.create(order);
-            res.put("order", createdOrder);
-            res.put("message", "Order Created Successfully");
-            return ResponseEntity.status(HttpStatus.CREATED).body(res);
-        }catch (Exception e){
-            res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.put("error", e.getMessage());
-            res.put("message", "Something Wrong With Server");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
-        }
+        return orderService.create(order)
+                .thenApply(createdOrder -> {
+                    res.put("order", createdOrder);
+                    res.put("message", "Order Created Successfully");
+                    return ResponseEntity.status(HttpStatus.CREATED).body(res);
+                })
+                .exceptionally(e -> {
+                    res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    res.put("error", e.getMessage());
+                    res.put("message", "Something Wrong With Server");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+                });
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable("id") String id){
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> deleteOrder(@PathVariable("id") String id) {
         Map<String, Object> res = new HashMap<>();
-        try{
-            orderService.delete(id);
-            res.put("code", HttpStatus.OK.value());
-            res.put("message", "Order Deleted Successfully");
-            return ResponseEntity.status(HttpStatus.OK).body(res);
-        }catch (Exception e){
-            res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.put("error", e.getMessage());
-            res.put("message", "Something Wrong With Server");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                orderService.delete(id);
+                res.put("code", HttpStatus.OK.value());
+                res.put("message", "Order Deleted Successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(res);
+            } catch (Exception e) {
+                res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                res.put("error", e.getMessage());
+                res.put("message", "Something Wrong With Server");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+            }
+        });
     }
 
     @PutMapping
-    public ResponseEntity<?> updateOrder(@RequestBody Order order){
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> updateOrder(@RequestBody Order order) {
         Map<String, Object> res = new HashMap<>();
-        try{
-            Order updatedOrder = orderService.update(order);
-            res.put("order", updatedOrder);
-            res.put("message", "Order ID " + updatedOrder.getId() +" updated Successfully");
-            return ResponseEntity.status(HttpStatus.CREATED).body(res);
-        }catch (Exception e){
-            res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.put("error", e.getMessage());
-            res.put("message", "Something Wrong With Server");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
-        }
+        return orderService.update(order)
+                .thenApply(updatedOrder -> {
+                    res.put("order", updatedOrder);
+                    res.put("message", "Order ID " + updatedOrder.getId() + " updated Successfully");
+                    return ResponseEntity.status(HttpStatus.CREATED).body(res);
+                })
+                .exceptionally(e -> {
+                    res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    res.put("error", e.getMessage());
+                    res.put("message", "Something Wrong With Server");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+                });
     }
 
+
+
     @GetMapping
-    public ResponseEntity<?> findAllOrders(){
-        try {
-            List<Order> orders = orderService.findAll();
-            return ResponseEntity.ok(orders);
-        }catch (Exception e){
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.put("error", e.getMessage());
-            response.put("message", "Something Wrong With Server");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public CompletableFuture<ResponseEntity<List<Order>>> findAllOrders(){
+        return orderService.findAll()
+                .thenApplyAsync(orders -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return ResponseEntity.ok(orders);
+                })
+                .exceptionally(exception -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.put("error", exception.getCause() != null ? exception.getCause().getMessage() : "Unknown error");
+                    response.put("message", "Something went wrong with the server");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+                });
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") String id){
+    public CompletableFuture<ResponseEntity<?>> findById(@PathVariable("id") String id){
         Map<String, Object> response = new HashMap<>();
-        try {
-            Optional<Order> order = orderService.findById(id);
-            if (order.isEmpty()){
-                response.put("code", HttpStatus.NOT_FOUND.value());
-                response.put("message", "Order with ID " + id + " not found.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            return ResponseEntity.ok(order);
-        }catch (Exception e){
-            response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.put("error", e.getMessage());
-            response.put("message", "Something Wrong With Server");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        return orderService.findById(id)
+                .thenApply(order -> {
+                    if (order.isEmpty()){
+                        response.put("code", HttpStatus.NOT_FOUND.value());
+                        response.put("message", "Order with ID " + id + " not found.");
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                    }
+                    return ResponseEntity.ok(order.get());
+                })
+                .exceptionally(e -> {
+                    response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.put("error", e.getMessage());
+                    response.put("message", "Something Wrong With Server");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                });
+    }
+
+    @GetMapping("/seller/{id}")
+    public CompletableFuture<ResponseEntity<?>> findBySellerId(@PathVariable("id") String id){
+        Map<String, Object> response = new HashMap<>();
+        return orderService.findBySellerId(id)
+                .thenApply(order -> {
+                    if (order.isEmpty()){
+                        response.put("code", HttpStatus.NOT_FOUND.value());
+                        response.put("message", "Listing with seller ID " + id + " not found.");
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                    }
+                    return ResponseEntity.ok(order);
+                })
+                .exceptionally(e -> {
+                    response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.put("error", e.getMessage());
+                    response.put("message", "Something Wrong With Server");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                });
     }
 }
