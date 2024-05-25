@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,9 +46,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.ITEM)
                 .build();
 
-        when(reportService.createReport(any(Report.class))).thenReturn(report);
+        when(reportService.createReport(any(Report.class))).thenReturn(CompletableFuture.completedFuture(report));
 
-        ResponseEntity<Report> response = reportController.createReport(report);
+        ResponseEntity<Report> response = reportController.createReport(report).join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(report, response.getBody());
@@ -64,9 +65,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.ITEM)
                 .build();
 
-        when(reportService.updateReport(anyString(), any(Report.class))).thenReturn(report);
+        when(reportService.updateReport(anyString(), any(Report.class))).thenReturn(CompletableFuture.completedFuture(report));
 
-        ResponseEntity<Report> response = reportController.updateReport(UUID.randomUUID().toString(), report);
+        ResponseEntity<Report> response = reportController.updateReport(UUID.randomUUID().toString(), report).join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(report, response.getBody());
@@ -75,9 +76,9 @@ public class ReportControllerTest {
 
     @Test
     void testDeleteReport_Success() {
-        doNothing().when(reportService).deleteReport(anyString());
+        when(reportService.deleteReport(anyString())).thenReturn(CompletableFuture.completedFuture(null));
 
-        ResponseEntity<Void> response = reportController.deleteReport(UUID.randomUUID().toString());
+        ResponseEntity<Void> response = reportController.deleteReport(UUID.randomUUID().toString()).join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(reportService, times(1)).deleteReport(anyString());
@@ -93,9 +94,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.ITEM)
                 .build();
 
-        when(reportService.findReportById(anyString())).thenReturn(Optional.of(report));
+        when(reportService.findReportById(anyString())).thenReturn(CompletableFuture.completedFuture(Optional.of(report)));
 
-        ResponseEntity<Optional<Report>> response = reportController.findReportById(UUID.randomUUID().toString());
+        ResponseEntity<Optional<Report>> response = reportController.findReportById(UUID.randomUUID().toString()).join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(report, response.getBody().get());
@@ -104,9 +105,9 @@ public class ReportControllerTest {
 
     @Test
     void testFindReportById_NotFound() {
-        when(reportService.findReportById(anyString())).thenReturn(Optional.empty());
+        when(reportService.findReportById(anyString())).thenReturn(CompletableFuture.completedFuture(Optional.empty()));
 
-        ResponseEntity<Optional<Report>> response = reportController.findReportById(UUID.randomUUID().toString());
+        ResponseEntity<Optional<Report>> response = reportController.findReportById(UUID.randomUUID().toString()).join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         verify(reportService, times(1)).findReportById(anyString());
@@ -130,9 +131,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.ITEM)
                 .build());
 
-        when(reportService.findAll()).thenReturn(reports);
+        when(reportService.findAll()).thenReturn(CompletableFuture.completedFuture(reports));
 
-        ResponseEntity<List<Report>> response = reportController.findAllReports();
+        ResponseEntity<List<Report>> response = reportController.findAll().join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
@@ -157,9 +158,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.ITEM)
                 .build());
 
-        when(reportService.findReportsByItemId(anyString())).thenReturn(reports);
+        when(reportService.findReportsByItemId(anyString())).thenReturn(CompletableFuture.completedFuture(reports));
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByItemId("13652556-012a-4c07-b546-54eb1396d79b");
+        ResponseEntity<List<Report>> response = reportController.findReportsByItemId("13652556-012a-4c07-b546-54eb1396d79b").join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
@@ -184,9 +185,9 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.USER)
                 .build());
 
-        when(reportService.findReportsByUserId(anyString())).thenReturn(reports);
+        when(reportService.findReportsByUserId(anyString())).thenReturn(CompletableFuture.completedFuture(reports));
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByUserId("13652556-012a-4c07-b546-54eb1396d79b");
+        ResponseEntity<List<Report>> response = reportController.findReportsByUserId("13652556-012a-4c07-b546-54eb1396d79b").join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
@@ -211,13 +212,14 @@ public class ReportControllerTest {
                 .targetType(ReportTargetType.USER)
                 .build());
 
-        when(reportService.findReportsByAuthorId(anyString())).thenReturn(reports);
+        when(reportService.findReportsByAuthorId(anyString())).thenReturn(CompletableFuture.completedFuture(reports));
 
-        ResponseEntity<List<Report>> response = reportController.findReportsByAuthorId("a2c62328-4a37-4664-83c7-f32db8620155");
+        ResponseEntity<List<Report>> response = reportController.findReportsByAuthorId("a2c62328-4a37-4664-83c7-f32db8620155").join(); // Ensure CompletableFuture completes
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(reports, response.getBody());
         verify(reportService, times(1)).findReportsByAuthorId(anyString());
     }
 }
+
 

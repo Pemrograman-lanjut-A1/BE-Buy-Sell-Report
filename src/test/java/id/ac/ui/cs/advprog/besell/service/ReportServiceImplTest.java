@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -19,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 public class ReportServiceImplTest {
 
@@ -38,7 +42,7 @@ public class ReportServiceImplTest {
     }
 
     @Test
-    void testCreateReport_Success() {
+    void testCreateReport_Success() throws ExecutionException, InterruptedException {
         Report report = new Report.Builder()
                 .authorId(authorId)
                 .description("description")
@@ -49,14 +53,15 @@ public class ReportServiceImplTest {
 
         when(reportRepository.save(any(Report.class))).thenReturn(report);
 
-        Report createdReport = reportService.createReport(report);
+        CompletableFuture<Report> future = reportService.createReport(report);
+        Report createdReport = future.get();
 
         assertNotNull(createdReport);
         verify(reportRepository).save(report);
     }
 
     @Test
-    void testUpdateReport_Found() {
+    void testUpdateReport_Found() throws ExecutionException, InterruptedException {
         Report existingReport = new Report.Builder()
                 .authorId(authorId)
                 .description("Old Description")
@@ -79,47 +84,66 @@ public class ReportServiceImplTest {
         existingReport.setDescription(updatedDetails.getDescription());
         existingReport.setReportDate(updatedDetails.getReportDate());
 
-        Report updatedReport = reportService.updateReport(existingReport.getId(), updatedDetails);
+        CompletableFuture<Report> future = reportService.updateReport(existingReport.getId(), updatedDetails);
+        Report updatedReport = future.get();
 
         assertNotNull(updatedReport);
         assertEquals("New Description", updatedReport.getDescription());
     }
-
     @Test
     void testUpdateReport_NotFound() {
-        Report newReport = new Report.Builder()
-                .authorId(authorId)
-                .description("New Report")
+        String nonExistentId = UUID.randomUUID().toString();
+
+        Report reportDetails = new Report.Builder()
+                .authorId("authorId")
+                .description("Description")
                 .reportDate(LocalDateTime.now())
-                .targetId(targetId)
+                .targetId("targetId")
                 .targetType(ReportTargetType.ITEM)
                 .build();
 
-        when(reportRepository.findById(newReport.getId())).thenReturn(Optional.empty());
-        assertThrows(ResponseStatusException.class, () -> {
-            reportService.updateReport(newReport.getId(), newReport);
-        });
-    }
+        when(reportRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-
-    @Test
-    public void testDeleteReport() {
-        doNothing().when(reportRepository).deleteById("a2c62328-4a37-4664-83c7-f32db8620155");
-        reportService.deleteReport("a2c62328-4a37-4664-83c7-f32db8620155");
-        verify(reportRepository).deleteById("a2c62328-4a37-4664-83c7-f32db8620155");
+        assertThrows(ResponseStatusException.class, () -> reportService.updateReport(nonExistentId, reportDetails).get());
     }
 
     @Test
-    void testFindReportById_NotFound() {
+    public void testDeleteReport() throws ExecutionException, InterruptedException {
+        // Create a new report
+        Report report = new Report.Builder()
+                .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
+                .description("description")
+                .targetId("13652556-012a-4c07-b546-54eb1396d79b")
+                .reportDate(LocalDateTime.now())
+                .targetType(ReportTargetType.ITEM)
+                .build();
+
+        // Save the report in the repository
+        when(reportRepository.save(any(Report.class))).thenReturn(report);
+
+        // Create the report asynchronously
+        CompletableFuture<Report> createReportFuture = reportService.createReport(report);
+        Report createdReport = createReportFuture.get();
+        // Delete the report
+        CompletableFuture<Void> deleteReportFuture = reportService.deleteReport(createdReport.getId());
+        deleteReportFuture.get();
+
+        // Verify that the report was deleted by checking if deleteById was called with the correct ID
+        verify(reportRepository).deleteById(createdReport.getId());
+    }
+
+    @Test
+    void testFindReportById_NotFound() throws ExecutionException, InterruptedException {
         when(reportRepository.findById("a2c62328-4a37-4664-83c7-f32db8620155")).thenReturn(Optional.empty());
 
-        Optional<Report> report = reportService.findReportById("a2c62328-4a37-4664-83c7-f32db8620155");
+        CompletableFuture<Optional<Report>> future = reportService.findReportById("a2c62328-4a37-4664-83c7-f32db8620155");
+        Optional<Report> report = future.get();
 
         assertTrue(report.isEmpty());
     }
 
     @Test
-    public void testFindReportById() {
+    public void testFindReportById() throws ExecutionException, InterruptedException {
         Report report = new Report.Builder()
                 .authorId(authorId)
                 .description("Sample report")
@@ -129,13 +153,16 @@ public class ReportServiceImplTest {
                 .build();
 
         when(reportRepository.findById(report.getId())).thenReturn(Optional.of(report));
-        Optional<Report> foundReport = reportService.findReportById(report.getId());
+
+        CompletableFuture<Optional<Report>> future = reportService.findReportById(report.getId());
+        Optional<Report> foundReport = future.get();
+
         assertTrue(foundReport.isPresent());
         assertEquals("Sample report", foundReport.get().getDescription());
     }
 
     @Test
-    void testFindReportsByItemId() {
+    void testFindReportsByItemId() throws ExecutionException, InterruptedException {
         Report report = new Report.Builder()
                 .authorId(authorId)
                 .description("Sample report")
@@ -146,7 +173,8 @@ public class ReportServiceImplTest {
 
         when(reportRepository.findByTargetId(targetId)).thenReturn(Arrays.asList(report));
 
-        List<Report> reports = reportService.findReportsByItemId(targetId);
+        CompletableFuture<List<Report>> future = reportService.findReportsByItemId(targetId);
+        List<Report> reports = future.get();
 
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
@@ -154,7 +182,7 @@ public class ReportServiceImplTest {
     }
 
     @Test
-    public void testFindReportsByUserId() {
+    public void testFindReportsByUserId() throws ExecutionException, InterruptedException {
         Report report = new Report.Builder()
                 .authorId(authorId)
                 .description("Sample report")
@@ -164,13 +192,16 @@ public class ReportServiceImplTest {
                 .build();
 
         when(reportRepository.findByTargetId(targetId)).thenReturn(Arrays.asList(report));
-        List<Report> reports = reportService.findReportsByUserId(targetId);
+
+        CompletableFuture<List<Report>> future = reportService.findReportsByUserId(targetId);
+        List<Report> reports = future.get();
+
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
     }
 
     @Test
-    public void testFindReportsByAuthorId() {
+    public void testFindReportsByAuthorId() throws ExecutionException, InterruptedException {
         Report report = new Report.Builder()
                 .authorId(authorId)
                 .description("Sample report")
@@ -180,46 +211,53 @@ public class ReportServiceImplTest {
                 .build();
 
         when(reportRepository.findByAuthorId(authorId)).thenReturn(Arrays.asList(report));
-        List<Report> reports = reportService.findReportsByAuthorId(authorId);
+
+        CompletableFuture<List<Report>> future = reportService.findReportsByAuthorId(authorId);
+        List<Report> reports = future.get();
+
         assertFalse(reports.isEmpty());
         assertEquals(1, reports.size());
     }
 
     @Test
-    void testFindAll_Empty() {
+    void testFindAll_Empty() throws ExecutionException, InterruptedException {
         when(reportRepository.findAll()).thenReturn(List.of());
 
-        List<Report> reports = reportService.findAll();
+        CompletableFuture<List<Report>> future = reportService.findAll();
+        List<Report> reports = future.get();
 
         assertTrue(reports.isEmpty());
         verify(reportRepository, times(1)).findAll();
     }
 
     @Test
-    void testFindReportsByItemId_NoReportsFound() {
+    void testFindReportsByItemId_NoReportsFound() throws ExecutionException, InterruptedException {
         when(reportRepository.findByTargetId(anyString())).thenReturn(List.of());
 
-        List<Report> reports = reportService.findReportsByItemId("nonExistingItemId");
+        CompletableFuture<List<Report>> future = reportService.findReportsByItemId("nonExistingItemId");
+        List<Report> reports = future.get();
 
         assertTrue(reports.isEmpty());
         verify(reportRepository, times(1)).findByTargetId(anyString());
     }
 
     @Test
-    void testFindReportsByUserId_NoReportsFound() {
+    void testFindReportsByUserId_NoReportsFound() throws ExecutionException, InterruptedException {
         when(reportRepository.findByTargetId(anyString())).thenReturn(List.of());
 
-        List<Report> reports = reportService.findReportsByUserId("nonExistingUserId");
+        CompletableFuture<List<Report>> future = reportService.findReportsByUserId("nonExistingUserId");
+        List<Report> reports = future.get();
 
         assertTrue(reports.isEmpty());
         verify(reportRepository, times(1)).findByTargetId(anyString());
     }
 
     @Test
-    void testFindReportsByAuthorId_NoReportsFound() {
+    void testFindReportsByAuthorId_NoReportsFound() throws ExecutionException, InterruptedException {
         when(reportRepository.findByAuthorId(anyString())).thenReturn(List.of());
 
-        List<Report> reports = reportService.findReportsByAuthorId("nonExistingAuthorId");
+        CompletableFuture<List<Report>> future = reportService.findReportsByAuthorId("nonExistingAuthorId");
+        List<Report> reports = future.get();
 
         assertTrue(reports.isEmpty());
         verify(reportRepository, times(1)).findByAuthorId(anyString());
@@ -227,9 +265,12 @@ public class ReportServiceImplTest {
 
     @Test
     void testDeleteReport_NotFound() {
-        doThrow(new IllegalArgumentException("Report not found")).when(reportRepository).deleteById(anyString());
+        String nonExistentId = UUID.randomUUID().toString();
+        doThrow(EmptyResultDataAccessException.class).when(reportRepository).deleteById(nonExistentId);
 
-        assertThrows(IllegalArgumentException.class, () -> reportService.deleteReport(UUID.randomUUID().toString()));
+        assertThrows(EmptyResultDataAccessException.class, () -> reportService.deleteReport(nonExistentId).get());
     }
+
+
 }
 
