@@ -17,7 +17,7 @@ public class ReportTest {
         String authorId = "13652556-012a-4c07-b546-54eb1396d79b";
         LocalDateTime dateCreated = LocalDateTime.now();
         String targetId = "a2c62328-4a37-4664-83c7-f32db8620155";
-        report = new Report.Builder().authorId(authorId).description("Barang ini tidak sesuai").reportDate(dateCreated).targetId(targetId)
+        report = new ReportBuilder().authorId(authorId).description("Barang ini tidak sesuai").reportDate(dateCreated).targetId(targetId)
                 .targetType(ReportTargetType.ITEM).build();
         assertEquals(report.getDescription(), "Barang ini tidak sesuai");
         assertEquals(report.getAuthorId(), authorId);
@@ -29,7 +29,7 @@ public class ReportTest {
     @Test
     void testCreateReportWithoutDescription() {
         assertThrows(IllegalArgumentException.class, () -> {
-            report = new Report.Builder()
+            report = new ReportBuilder()
                     .authorId("13652556-012a-4c07-b546-54eb1396d79b")
                     .reportDate(LocalDateTime.now()).description("")
                     .targetId("a2c62328-4a37-4664-83c7-f32db8620155")
@@ -41,7 +41,7 @@ public class ReportTest {
     @Test
     void testSetDescriptionValid() {
         String descriptionTest = "Deskripsi yang valid";
-        report = new Report.Builder()
+        report = new ReportBuilder()
                 .authorId("13652556-012a-4c07-b546-54eb1396d79b")
                 .description("Deskripsi report")
                 .reportDate(LocalDateTime.now())
@@ -55,7 +55,7 @@ public class ReportTest {
     @Test
     void testSetDescriptionInvalid() {
         assertThrows(IllegalArgumentException.class, () -> {
-            report = new Report.Builder()
+            report = new ReportBuilder()
                     .authorId("13652556-012a-4c07-b546-54eb1396d79b")
                     .description("Deskripsi report")
                     .reportDate(LocalDateTime.now())
@@ -69,7 +69,7 @@ public class ReportTest {
     @Test
     void testEmptyAuthorId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            report = new Report.Builder()
+            report = new ReportBuilder()
                     .authorId("")
                     .description("deskripsi")
                     .reportDate(LocalDateTime.now())
@@ -82,7 +82,7 @@ public class ReportTest {
     @Test
     void testEmptyTargetId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            report = new Report.Builder()
+            report = new ReportBuilder()
                     .authorId("123")
                     .description("deskripsi")
                     .reportDate(LocalDateTime.now())
@@ -94,7 +94,7 @@ public class ReportTest {
 
     @Test
     void testSetReportDate() {
-        report = new Report.Builder()
+        report = new ReportBuilder()
                 .authorId("13652556-012a-4c07-b546-54eb1396d79b")
                 .description("Deskripsi report")
                 .reportDate(LocalDateTime.now())

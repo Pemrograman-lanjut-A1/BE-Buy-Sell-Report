@@ -25,6 +25,14 @@ public class Report {
 
     public Report() {
     }
+    public Report(String id, String authorId, String description, LocalDateTime reportDate, String targetId, ReportTargetType targetType) {
+        this.id = id;
+        this.authorId = authorId;
+        this.description = description;
+        this.reportDate = reportDate;
+        this.targetId = targetId;
+        this.targetType = targetType;
+    }
     public void setDescription(String description) {
         if (description == null || description.isEmpty()) {
             throw new IllegalArgumentException("Description cannot be empty");
@@ -34,62 +42,5 @@ public class Report {
     public void setReportDate(LocalDateTime reportDate) {
         this.reportDate = reportDate;
     }
-    public static class Builder {
-        private String authorId;
-        private String description;
-        private LocalDateTime reportDate;
-        private String targetId;
-        private ReportTargetType targetType;
 
-        public Builder authorId(String authorId) {
-            if (authorId == null || authorId.isEmpty()) {
-                throw new IllegalArgumentException("AuthorId cannot be null or empty");
-            }
-            this.authorId = authorId;
-            return this;
-        }
-
-        public Builder description(String description) {
-            if (description == null || description.isEmpty()) {
-                throw new IllegalArgumentException("Description cannot be null or empty");
-            }
-            this.description = description;
-            return this;
-        }
-
-        public Builder reportDate(LocalDateTime reportDate) {
-            this.reportDate = reportDate;
-            return this;
-        }
-
-        public Builder targetId(String targetId) {
-            if (targetId == null || targetId.isEmpty()) {
-                throw new IllegalArgumentException("TargetId cannot be null or empty");
-            }
-            this.targetId = targetId;
-            return this;
-        }
-
-        public Builder targetType(ReportTargetType targetType) {
-            if (targetType == null) {
-                throw new IllegalArgumentException("TargetType cannot be null");
-            }
-            this.targetType = targetType;
-            return this;
-        }
-
-        public Report build() {
-            if (authorId == null || description == null || targetId == null || targetType == null) {
-                throw new IllegalStateException("Mandatory fields are not set");
-            }
-            Report report = new Report();
-            report.id = UUID.randomUUID().toString();
-            report.authorId = this.authorId;
-            report.description = this.description;
-            report.reportDate = this.reportDate != null ? this.reportDate : LocalDateTime.now();
-            report.targetId = this.targetId;
-            report.targetType = this.targetType;
-            return report;
-        }
-    }
 }

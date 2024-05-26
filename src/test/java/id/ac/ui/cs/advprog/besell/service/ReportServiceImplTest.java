@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import id.ac.ui.cs.advprog.besell.enums.ReportTargetType;
 import id.ac.ui.cs.advprog.besell.model.Report;
+import id.ac.ui.cs.advprog.besell.model.ReportBuilder;
 import id.ac.ui.cs.advprog.besell.repository.ReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ public class ReportServiceImplTest {
 
     @Test
     void testCreateReport_Success() throws ExecutionException, InterruptedException {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId(authorId)
                 .description("description")
                 .targetId(targetId)
@@ -62,7 +63,7 @@ public class ReportServiceImplTest {
 
     @Test
     void testUpdateReport_Found() throws ExecutionException, InterruptedException {
-        Report existingReport = new Report.Builder()
+        Report existingReport = new ReportBuilder()
                 .authorId(authorId)
                 .description("Old Description")
                 .reportDate(LocalDateTime.now())
@@ -70,7 +71,7 @@ public class ReportServiceImplTest {
                 .targetType(ReportTargetType.ITEM)
                 .build();
 
-        Report updatedDetails = new Report.Builder()
+        Report updatedDetails = new ReportBuilder()
                 .authorId(authorId)
                 .description("New Description")
                 .reportDate(LocalDateTime.now())
@@ -94,7 +95,7 @@ public class ReportServiceImplTest {
     void testUpdateReport_NotFound() {
         String nonExistentId = UUID.randomUUID().toString();
 
-        Report reportDetails = new Report.Builder()
+        Report reportDetails = new ReportBuilder()
                 .authorId("authorId")
                 .description("Description")
                 .reportDate(LocalDateTime.now())
@@ -110,7 +111,7 @@ public class ReportServiceImplTest {
     @Test
     public void testDeleteReport() throws ExecutionException, InterruptedException {
         // Create a new report
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -144,7 +145,7 @@ public class ReportServiceImplTest {
 
     @Test
     public void testFindReportById() throws ExecutionException, InterruptedException {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId(authorId)
                 .description("Sample report")
                 .reportDate(LocalDateTime.now())
@@ -163,7 +164,7 @@ public class ReportServiceImplTest {
 
     @Test
     void testFindReportsByItemId() throws ExecutionException, InterruptedException {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId(authorId)
                 .description("Sample report")
                 .reportDate(LocalDateTime.now())
@@ -183,7 +184,7 @@ public class ReportServiceImplTest {
 
     @Test
     public void testFindReportsByUserId() throws ExecutionException, InterruptedException {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId(authorId)
                 .description("Sample report")
                 .reportDate(LocalDateTime.now())
@@ -202,7 +203,7 @@ public class ReportServiceImplTest {
 
     @Test
     public void testFindReportsByAuthorId() throws ExecutionException, InterruptedException {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId(authorId)
                 .description("Sample report")
                 .reportDate(LocalDateTime.now())

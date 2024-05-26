@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.besell.controller;
 
 import id.ac.ui.cs.advprog.besell.enums.ReportTargetType;
 import id.ac.ui.cs.advprog.besell.model.Report;
+import id.ac.ui.cs.advprog.besell.model.ReportBuilder;
 import id.ac.ui.cs.advprog.besell.service.ReportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ public class ReportControllerTest {
 
     @Test
     void testCreateReport_Success() {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -57,7 +58,7 @@ public class ReportControllerTest {
 
     @Test
     void testUpdateReport_Success() {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -86,7 +87,7 @@ public class ReportControllerTest {
 
     @Test
     void testFindReportById_Success() {
-        Report report = new Report.Builder()
+        Report report = new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -116,14 +117,14 @@ public class ReportControllerTest {
     @Test
     void testFindAllReports_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
                 .reportDate(LocalDateTime.now())
                 .targetType(ReportTargetType.ITEM)
                 .build());
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -143,14 +144,14 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByItemId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
                 .reportDate(LocalDateTime.now())
                 .targetType(ReportTargetType.ITEM)
                 .build());
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -170,14 +171,14 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByUserId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
                 .reportDate(LocalDateTime.now())
                 .targetType(ReportTargetType.USER)
                 .build());
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
@@ -197,14 +198,14 @@ public class ReportControllerTest {
     @Test
     void testFindReportsByAuthorId_Success() {
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
                 .reportDate(LocalDateTime.now())
                 .targetType(ReportTargetType.USER)
                 .build());
-        reports.add(new Report.Builder()
+        reports.add(new ReportBuilder()
                 .authorId("a2c62328-4a37-4664-83c7-f32db8620155")
                 .description("description")
                 .targetId("13652556-012a-4c07-b546-54eb1396d79b")
