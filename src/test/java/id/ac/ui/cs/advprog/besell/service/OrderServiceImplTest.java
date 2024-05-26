@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceImplTest {
+class OrderServiceImplTest {
     @InjectMocks
     OrderServiceImpl orderService;
 
@@ -87,6 +87,28 @@ public class OrderServiceImplTest {
         assertEquals(order1.getId(), orderList.getFirst().getId());
         assertEquals(order2.getId(), orderList.get(1).getId());
         assertFalse(orderList.isEmpty());
+    }
+
+    @Test
+    void testFindBySellerId() throws ExecutionException, InterruptedException{
+        OrderBuilder builder = new OrderBuilder("FakeItemId", "FakeSellerId");
+        Order order1 = builder.setBuyerId("FakeBuyerId").setSellerId("seller1")
+                .build();
+
+        Mockito.when(orderRepository.save(order1)).thenReturn(order1);
+        orderService.create(order1);
+
+        Order order2 = builder.setBuyerId("FakeBuyerId2").setSellerId("seller2")
+                .build();
+        Mockito.when(orderRepository.save(order2)).thenReturn(order2);
+        orderService.create(order2);
+
+        Mockito.when(orderRepository.findBySellerId("seller1")).thenReturn(List.of(order1));
+        CompletableFuture<List<Order>> orderListFuture = orderService.findBySellerId("seller1");
+        List<Order> orderList = orderListFuture.get();
+
+        assertFalse(orderList.isEmpty());
+        assertEquals(order1.getId(), orderList.getFirst().getId());
     }
 
     @Test

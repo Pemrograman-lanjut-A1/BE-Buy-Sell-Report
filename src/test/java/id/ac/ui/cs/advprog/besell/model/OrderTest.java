@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-public class OrderTest {
+class OrderTest {
     Order order;
     OrderBuilder orderBuilder;
     Listing listing;
@@ -30,6 +30,10 @@ public class OrderTest {
     void testGetOrderStatusSuccess(){
         order.setStatus("SUCCESS");
         assertEquals(OrderStatus.SUCCESS.getValue(), this.order.getStatus());
+    }
+    @Test
+    void testSetOrderStatusError(){
+        assertThrows(IllegalArgumentException.class, () -> order.setStatus("No Status"));
     }
 
     @Test

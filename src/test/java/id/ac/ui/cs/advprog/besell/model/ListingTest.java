@@ -59,5 +59,29 @@ class ListingTest {
         assertEquals(0, this.listing.getStock());
     }
 
+    @Test
+    void testSetStockPositive(){
+        this.listing.setStock(1);
+        assertEquals(1, this.listing.getStock());
+    }
+
+    @Test
+    void testSetPrice(){
+        this.listing.setPrice(1000);
+        assertEquals(1000, this.listing.getPrice());
+    }
+
+    @Test
+    void testSetDescription(){
+        this.listing.setDescription("murah");
+        assertEquals("murah", this.listing.getDescription());
+    }
+
+    @Test
+    void testSetImageUrl(){
+        this.listing.setImageUrl("dummyUrl.com");
+        assertEquals("dummyUrl.com", this.listing.getImageUrl());
+    }
+
 }
 

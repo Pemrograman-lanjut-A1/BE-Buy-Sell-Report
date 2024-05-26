@@ -3,12 +3,9 @@ package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Listing;
 import id.ac.ui.cs.advprog.besell.repository.ListingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -16,8 +13,11 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class ListingServiceImpl implements ListingService {
 
-    @Autowired
-    private ListingRepository listingRepository;
+    private final ListingRepository listingRepository;
+
+    public ListingServiceImpl(ListingRepository listingRepository){
+        this.listingRepository = listingRepository;
+    }
 
     @Override
     @Async

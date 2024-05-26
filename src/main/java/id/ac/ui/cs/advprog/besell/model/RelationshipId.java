@@ -33,4 +33,9 @@ public class RelationshipId implements Serializable {
         return Objects.equals( orderId, pk.orderId ) &&
                 Objects.equals( listingId, pk.listingId );
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, listingId);
+    }
 }

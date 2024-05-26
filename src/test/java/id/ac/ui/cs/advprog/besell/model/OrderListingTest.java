@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OrderListingTest {
+class OrderListingTest {
     OrderListing orderListing;
 
     @BeforeEach
@@ -41,5 +41,13 @@ public class OrderListingTest {
     void testGetListingQuantitySetNegative(){
         this.orderListing.setQuantity(-3);
         assertEquals(0, this.orderListing.getQuantity());
+    }
+    @Test
+    void testSetId(){
+        RelationshipId pk = new RelationshipId("order", "listing");
+        this.orderListing.setId(pk);
+        assertEquals(pk, this.orderListing.getId());
+        assertEquals("order", this.orderListing.getOrderId());
+        assertEquals("listing", this.orderListing.getListingId());
     }
 }
