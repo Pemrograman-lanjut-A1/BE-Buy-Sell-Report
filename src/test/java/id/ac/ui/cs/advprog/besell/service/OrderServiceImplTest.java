@@ -74,7 +74,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.save(order1)).thenReturn(order1);
         orderService.create(order1);
 
-        Order order2 = builder.setBuyerId("FakeBuyerId2")
+        Order order2 = builder.setBuyerId("FakeBuyerId3")
                 .build();
         Mockito.when(orderRepository.save(order2)).thenReturn(order2);
         orderService.create(order2);
