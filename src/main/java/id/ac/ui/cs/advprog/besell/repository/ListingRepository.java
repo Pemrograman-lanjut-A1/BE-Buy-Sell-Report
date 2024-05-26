@@ -4,8 +4,6 @@ import id.ac.ui.cs.advprog.besell.model.Listing;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Repository

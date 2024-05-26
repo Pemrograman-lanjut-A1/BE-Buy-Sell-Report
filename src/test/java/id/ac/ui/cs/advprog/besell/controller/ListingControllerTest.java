@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 public class ListingControllerTest {
 
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
 
     @Mock
     private ListingService listingService;
@@ -43,12 +41,12 @@ public class ListingControllerTest {
     private ListingController listingController;
 
     public ListingControllerTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(listingController).build();
     }
 
     @Test
-    public void testFindById() throws Exception {
+    void testFindById() throws Exception {
         // Mocking the service response
         Listing listing = new Listing();
         listing.setId("123");
@@ -67,7 +65,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testFindById_NotFound() throws Exception {
+    void testFindById_NotFound() throws Exception {
         // Mocking the service response
         CompletableFuture<Optional<Listing>> future = CompletableFuture.completedFuture(Optional.empty());
         when(listingService.findById(anyString())).thenReturn(future);
@@ -82,7 +80,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void findByIdInternalError() throws Exception {
+    void findByIdInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.findById(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -96,7 +94,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testFindAllListings() throws Exception {
+    void testFindAllListings() throws Exception {
         // Mocking the service response
         List<Listing> listings = Arrays.asList(new Listing(), new Listing());
         CompletableFuture<List<Listing>> future = CompletableFuture.completedFuture(listings);
@@ -116,7 +114,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void findAllInternalError() throws Exception {
+    void findAllInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.findAll()).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -130,7 +128,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testFindBySellerId() throws Exception {
+    void testFindBySellerId() throws Exception {
         // Mocking the service response
         Listing listing = new Listing();
         listing.setId("123");
@@ -151,7 +149,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void findBySellerIdInternalError() throws Exception {
+    void findBySellerIdInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.findBySellerId(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -165,7 +163,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testFindBySellerId_NotFound() throws Exception {
+    void testFindBySellerId_NotFound() throws Exception {
         // Mocking the service response
         CompletableFuture<List<Listing>> future = CompletableFuture.completedFuture(Collections.emptyList());
         when(listingService.findBySellerId(anyString())).thenReturn(future);
@@ -180,7 +178,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testCreateListing() throws Exception {
+    void testCreateListing() throws Exception {
         // Mocking the service response
         Listing listing = new Listing();
         listing.setId("123");
@@ -206,7 +204,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void createListingInternalError() {
+    void createListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.create(any(Listing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -241,7 +239,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testDeleteListing() throws Exception {
+    void testDeleteListing() throws Exception {
         // Mocking the service response
         CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
@@ -262,7 +260,7 @@ public class ListingControllerTest {
                 .andExpect(jsonPath("$.message").value("Listing Deleted Successfully"));
     }
     @Test
-    public void deleteListingInternalError() throws Exception {
+    void deleteListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.delete(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -297,7 +295,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testUpdateListing() throws Exception {
+    void testUpdateListing() throws Exception {
         // Mocking the service response
         Listing listing = new Listing();
         listing.setId("123");
@@ -323,7 +321,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void updateListingInternalError() throws Exception {
+    void updateListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(listingService.update(any(Listing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");

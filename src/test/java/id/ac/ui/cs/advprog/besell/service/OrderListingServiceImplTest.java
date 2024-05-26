@@ -1,9 +1,5 @@
 package id.ac.ui.cs.advprog.besell.service;
-import id.ac.ui.cs.advprog.besell.model.Listing;
-import id.ac.ui.cs.advprog.besell.model.Order;
 import id.ac.ui.cs.advprog.besell.model.OrderListing;
-import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
-import id.ac.ui.cs.advprog.besell.repository.ListingRepository;
 import id.ac.ui.cs.advprog.besell.repository.OrderListingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -97,7 +92,7 @@ class OrderListingServiceImplTest {
     }
 
     @Test
-    void testDeleteListing() throws ExecutionException, InterruptedException{
+    void testDeleteListing(){
         OrderListing orderListing1 = new OrderListing();
         orderListing1.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         orderListing1.setListingId("Sampo Cap Bambang");

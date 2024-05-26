@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.besell.controller;
 import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
 import id.ac.ui.cs.advprog.besell.model.OrderListing;
 import id.ac.ui.cs.advprog.besell.service.OrderListingService;
-import id.ac.ui.cs.advprog.besell.service.OrderService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,7 +125,7 @@ public class OrderListingController {
     @GetMapping
     public CompletableFuture<ResponseEntity<List<OrderListing>>> findAllOrderListings(){
         return orderListingService.findAll()
-                .thenApplyAsync(orders -> ResponseEntity.ok(orders))
+                .thenApplyAsync(ResponseEntity::ok)
                 .exceptionally(exception -> {
                     Map<String, Object> response = new HashMap<>();
                     response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());

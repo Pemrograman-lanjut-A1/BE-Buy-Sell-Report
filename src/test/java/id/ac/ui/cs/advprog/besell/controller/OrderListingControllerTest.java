@@ -45,7 +45,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testFindAllOrderListings() throws Exception {
+    void testFindAllOrderListings() throws Exception {
         // Mocking the service response
         List<OrderListing> OrderListings = Arrays.asList(new OrderListing(), new OrderListing());
         CompletableFuture<List<OrderListing>> future = CompletableFuture.completedFuture(OrderListings);
@@ -65,7 +65,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void findAllInternalError() throws Exception {
+    void findAllInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(OrderListingService.findAll()).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -79,7 +79,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testFindByOrderId() throws Exception {
+    void testFindByOrderId() throws Exception {
         // Mocking the service response
         OrderListing OrderListing = new OrderListing();
         OrderListing.setOrderId("123");
@@ -97,7 +97,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void findByOrderIdInternalError() throws Exception {
+    void findByOrderIdInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(OrderListingService.findByOrderId(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -111,7 +111,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testFindByOrderId_NotFound() throws Exception {
+    void testFindByOrderId_NotFound() throws Exception {
         // Mocking the service response
         CompletableFuture<List<OrderListing>> future = CompletableFuture.completedFuture(Collections.emptyList());
         when(OrderListingService.findByOrderId(anyString())).thenReturn(future);
@@ -126,7 +126,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testCreateOrderListing() throws Exception {
+    void testCreateOrderListing() throws Exception {
         // Mocking the service response
         OrderListing OrderListing = new OrderListing();
         OrderListing.setOrderId("123");
@@ -151,7 +151,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void createOrderListingInternalError() {
+    void createOrderListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(OrderListingService.create(any(OrderListing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -186,7 +186,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testDeleteOrderListing() throws Exception {
+    void testDeleteOrderListing() throws Exception {
         // Mocking the service response
         CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
@@ -205,7 +205,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void deleteOrderListingInternalError() throws Exception {
+    void deleteOrderListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(OrderListingService.delete(any(String.class))).thenThrow(new RuntimeException());
 
@@ -238,7 +238,7 @@ public class OrderListingControllerTest {
     }
 
     @Test
-    public void testUpdateOrderListing() throws Exception {
+    void testUpdateOrderListing() {
         // Mocking the service response
         OrderListing OrderListing = new OrderListing();
         OrderListing.setOrderId("123");
@@ -256,7 +256,7 @@ public class OrderListingControllerTest {
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
     }
     @Test
-    public void updateOrderListingInternalError() throws Exception {
+    void updateOrderListingInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(OrderListingService.update(any(OrderListing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");

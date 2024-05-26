@@ -45,7 +45,7 @@ class RelationshipIdTest {
     }
     @Test
     void testEqualsNull(){
-        assertFalse(this.relationshipId.equals(null));
+        assertNotEquals(null, this.relationshipId);
     }
 }
 

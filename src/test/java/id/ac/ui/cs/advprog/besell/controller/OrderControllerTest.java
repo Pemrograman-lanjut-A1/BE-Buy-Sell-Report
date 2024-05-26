@@ -5,17 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.*;
 
 import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
-import id.ac.ui.cs.advprog.besell.model.Listing;
 import id.ac.ui.cs.advprog.besell.model.Order;
 import id.ac.ui.cs.advprog.besell.service.OrderService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -23,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,7 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 public class OrderControllerTest {
 
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
 
     @Mock
     private OrderService orderService;
@@ -44,12 +40,12 @@ public class OrderControllerTest {
     private OrderController orderController;
 
     public OrderControllerTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
     }
 
     @Test
-    public void testFindById() throws Exception {
+    void testFindById() throws Exception {
         // Mocking the service response
         Order order = new Order();
         order.setId("123");
@@ -68,7 +64,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testFindById_NotFound() throws Exception {
+    void testFindById_NotFound() throws Exception {
         // Mocking the service response
         CompletableFuture<Optional<Order>> future = CompletableFuture.completedFuture(Optional.empty());
         when(orderService.findById(anyString())).thenReturn(future);
@@ -83,7 +79,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void findByIdInternalError() throws Exception {
+    void findByIdInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.findById(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -98,7 +94,7 @@ public class OrderControllerTest {
 
 
     @Test
-    public void testFindAllOrders() throws Exception {
+    void testFindAllOrders() throws Exception {
         // Mocking the service response
         List<Order> orders = Arrays.asList(new Order(), new Order());
         CompletableFuture<List<Order>> future = CompletableFuture.completedFuture(orders);
@@ -118,7 +114,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void findAllInternalError() throws Exception {
+    void findAllInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.findAll()).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -132,7 +128,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testFindBySellerId() throws Exception {
+    void testFindBySellerId() throws Exception {
         // Mocking the service response
         Order order = new Order();
         order.setId("123");
@@ -152,7 +148,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void findBySellerIdInternalError() throws Exception {
+    void findBySellerIdInternalError() throws Exception {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.findBySellerId(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -166,7 +162,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testFindBySellerId_NotFound() throws Exception {
+    void testFindBySellerId_NotFound() throws Exception {
         // Mocking the service response
         CompletableFuture<List<Order>> future = CompletableFuture.completedFuture(Collections.emptyList());
         when(orderService.findBySellerId(anyString())).thenReturn(future);
@@ -181,7 +177,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testCreateOrder() throws Exception {
+    void testCreateOrder() throws Exception {
         // Mocking the service response
         Order order = new Order();
         order.setId("123");
@@ -207,7 +203,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void createOrderInternalError() {
+    void createOrderInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.create(any(Order.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");
@@ -242,7 +238,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testDeleteOrder() throws Exception {
+    void testDeleteOrder() throws Exception {
         // Mocking the service response
         CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
@@ -261,7 +257,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void deleteOrderInternalError() throws Exception {
+    void deleteOrderInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.delete(any(String.class))).thenThrow(new RuntimeException());
 
@@ -294,7 +290,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testUpdateOrder() throws Exception {
+    void testUpdateOrder() throws Exception {
         // Mocking the service response
         Order order = new Order();
         order.setId("123");
@@ -318,8 +314,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.order.buyerId").value("TestId"))
                 .andExpect(jsonPath("$.message").value("Order ID 123 updated Successfully"));
     }
-    @Test
-    public void updateOrderInternalError() throws Exception {
+    @Test void updateOrderInternalError() {
         when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
         when(orderService.update(any(Order.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Simulated exception");

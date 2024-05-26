@@ -15,6 +15,7 @@ public class OrderBuilder {
 
     public OrderBuilder(String buyerId, String sellerId) {
         this.buyerId = buyerId;
+        this.sellerId = sellerId;
         this.status = OrderStatus.WAITING_PAYMENT.getValue();
     }
 

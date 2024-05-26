@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.besell.controller;
 
 import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
 import id.ac.ui.cs.advprog.besell.model.Order;
-import id.ac.ui.cs.advprog.besell.service.ListingService;
 import id.ac.ui.cs.advprog.besell.service.OrderService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +86,7 @@ public class OrderController {
                 res.put(MESSAGE_KEY, "Order Deleted Successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(res);
             } catch (Exception e) {
-                Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                Map<String, Object> errorResponse = handleInternalError(e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
         });
@@ -128,18 +127,11 @@ public class OrderController {
     @GetMapping
     public CompletableFuture<ResponseEntity<List<Order>>> findAllOrders(){
         return orderService.findAll()
-                .thenApplyAsync(orders -> {
-//                    try {
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-                    return ResponseEntity.ok(orders);
-                })
+                .thenApplyAsync(ResponseEntity::ok)
                 .exceptionally(exception -> {
                     Map<String, Object> response = new HashMap<>();
                     response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.put("error", exception.getCause() != null ? exception.getCause().getMessage() : "Unknown error");
+                    response.put(ERROR_KEY_MESSAGE, exception.getCause() != null ? exception.getCause().getMessage() : "Unknown error");
                     response.put(MESSAGE_KEY, "Something went wrong with the server");
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
                 });

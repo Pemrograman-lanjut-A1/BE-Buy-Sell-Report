@@ -1,10 +1,8 @@
 package id.ac.ui.cs.advprog.besell.service;
 
-import id.ac.ui.cs.advprog.besell.model.Order;
 import id.ac.ui.cs.advprog.besell.model.OrderListing;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface OrderListingService {
