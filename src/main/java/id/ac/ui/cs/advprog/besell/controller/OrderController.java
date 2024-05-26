@@ -1,8 +1,10 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
-import id.ac.ui.cs.advprog.besell.model.Listing;
+import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
 import id.ac.ui.cs.advprog.besell.model.Order;
+import id.ac.ui.cs.advprog.besell.service.ListingService;
 import id.ac.ui.cs.advprog.besell.service.OrderService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,59 +17,109 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping(path="/order", produces="application/json")
 @CrossOrigin(origins="*")
 public class OrderController {
+    private static final String MESSAGE_KEY = "message";
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Something Wrong With Server";
+    private static final String EXPIRED_JWT_MESSAGE = "JWT token has expired";
+    private static final String INVALID_JWT_MESSAGE = "Invalid JWT token";
+    private static final String FORBIDDEN_MESSAGE = "You are not authorized to make this request";
+    private static final String ERROR_KEY_MESSAGE = "error";
+    private final OrderService orderService;
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Autowired
-    OrderService orderService;
+    public OrderController(OrderService orderService, JwtAuthFilter jwtAuthFilter){
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.orderService = orderService;
+    }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> createOrder(@RequestBody Order order){
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> createOrder(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody Order order){
         Map<String, Object> res = new HashMap<>();
+
+        String role = null;
+        try {
+            role = jwtAuthFilter.filterToken(token);
+        }catch (Exception e){
+            handleJwtException(e);
+        }
+
+        if (role == null){
+            Map<String, Object> forbiddenResponse = handleForbidden();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(forbiddenResponse));
+        }
+
         return orderService.create(order)
                 .thenApply(createdOrder -> {
                     res.put("order", createdOrder);
-                    res.put("message", "Order Created Successfully");
+                    res.put(MESSAGE_KEY, "Order Created Successfully");
                     return ResponseEntity.status(HttpStatus.CREATED).body(res);
                 })
                 .exceptionally(e -> {
-                    res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    res.put("error", e.getMessage());
-                    res.put("message", "Something Wrong With Server");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+                    Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
                 });
     }
 
     @DeleteMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> deleteOrder(@PathVariable("id") String id) {
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> deleteOrder(
+            @RequestHeader(value = "Authorization") String token,
+            @PathVariable("id") String id) {
         Map<String, Object> res = new HashMap<>();
+
+        String role = null;
+        try {
+            role = jwtAuthFilter.filterToken(token);
+        }catch (Exception e){
+            handleJwtException(e);
+        }
+
+        if (role == null){
+            Map<String, Object> forbiddenResponse = handleForbidden();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(forbiddenResponse));
+        }
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 orderService.delete(id);
                 res.put("code", HttpStatus.OK.value());
-                res.put("message", "Order Deleted Successfully");
+                res.put(MESSAGE_KEY, "Order Deleted Successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(res);
             } catch (Exception e) {
-                res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                res.put("error", e.getMessage());
-                res.put("message", "Something Wrong With Server");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+                Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
         });
     }
 
     @PutMapping
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> updateOrder(@RequestBody Order order) {
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> updateOrder(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody Order order) {
         Map<String, Object> res = new HashMap<>();
+
+        String role = null;
+        try {
+            role = jwtAuthFilter.filterToken(token);
+        }catch (Exception e){
+            handleJwtException(e);
+        }
+
+        if (role == null){
+            Map<String, Object> forbiddenResponse = handleForbidden();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(forbiddenResponse));
+        }
+
         return orderService.update(order)
                 .thenApply(updatedOrder -> {
                     res.put("order", updatedOrder);
-                    res.put("message", "Order ID " + updatedOrder.getId() + " updated Successfully");
+                    res.put(MESSAGE_KEY, "Order ID " + updatedOrder.getId() + " updated Successfully");
                     return ResponseEntity.status(HttpStatus.CREATED).body(res);
                 })
                 .exceptionally(e -> {
-                    res.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    res.put("error", e.getMessage());
-                    res.put("message", "Something Wrong With Server");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+                    Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
                 });
     }
 
@@ -77,18 +129,18 @@ public class OrderController {
     public CompletableFuture<ResponseEntity<List<Order>>> findAllOrders(){
         return orderService.findAll()
                 .thenApplyAsync(orders -> {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+//                    try {
+//                        Thread.sleep(5000);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
                     return ResponseEntity.ok(orders);
                 })
                 .exceptionally(exception -> {
                     Map<String, Object> response = new HashMap<>();
                     response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
                     response.put("error", exception.getCause() != null ? exception.getCause().getMessage() : "Unknown error");
-                    response.put("message", "Something went wrong with the server");
+                    response.put(MESSAGE_KEY, "Something went wrong with the server");
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
                 });
     }
@@ -100,16 +152,14 @@ public class OrderController {
                 .thenApply(order -> {
                     if (order.isEmpty()){
                         response.put("code", HttpStatus.NOT_FOUND.value());
-                        response.put("message", "Order with ID " + id + " not found.");
+                        response.put(MESSAGE_KEY, "Order with ID " + id + " not found.");
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                     }
                     return ResponseEntity.ok(order.get());
                 })
                 .exceptionally(e -> {
-                    response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.put("error", e.getMessage());
-                    response.put("message", "Something Wrong With Server");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                    Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
                 });
     }
 
@@ -120,16 +170,35 @@ public class OrderController {
                 .thenApply(order -> {
                     if (order.isEmpty()){
                         response.put("code", HttpStatus.NOT_FOUND.value());
-                        response.put("message", "Listing with seller ID " + id + " not found.");
+                        response.put(MESSAGE_KEY, "Listing with seller ID " + id + " not found.");
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                     }
                     return ResponseEntity.ok(order);
                 })
                 .exceptionally(e -> {
-                    response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.put("error", e.getMessage());
-                    response.put("message", "Something Wrong With Server");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                    Map<String, Object> errorResponse = handleInternalError((Exception) e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
                 });
+    }
+
+    private Map<String, Object> handleJwtException(Exception e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", HttpStatus.FORBIDDEN.value());
+        response.put(MESSAGE_KEY, e instanceof ExpiredJwtException ? EXPIRED_JWT_MESSAGE : INVALID_JWT_MESSAGE);
+        return response;
+    }
+
+    private Map<String, Object> handleInternalError(Exception e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.put(ERROR_KEY_MESSAGE, e.getMessage());
+        response.put(MESSAGE_KEY, INTERNAL_SERVER_ERROR_MESSAGE);
+        return response;
+    }
+    private Map<String, Object> handleForbidden() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", HttpStatus.FORBIDDEN.value());
+        response.put(MESSAGE_KEY, FORBIDDEN_MESSAGE);
+        return response;
     }
 }

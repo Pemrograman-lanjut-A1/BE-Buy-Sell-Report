@@ -5,12 +5,12 @@ import id.ac.ui.cs.advprog.besell.model.OrderListing;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface OrderListingService {
-    OrderListing create(OrderListing order);
-    List<OrderListing> findAll();
-    void delete(String id);
-    Optional<OrderListing> findById(String id);
-    List<OrderListing> findByOrderId(String id);
-    OrderListing update(OrderListing order);
+    CompletableFuture<OrderListing> create(OrderListing order);
+    CompletableFuture<List<OrderListing>> findAll();
+    CompletableFuture<Void> delete(String id);
+    CompletableFuture<List<OrderListing>> findByOrderId(String id);
+    CompletableFuture<OrderListing> update(OrderListing order);
 }
