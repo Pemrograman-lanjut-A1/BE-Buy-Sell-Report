@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(path="/order", produces="application/json")
-@CrossOrigin(origins="*")
+@CrossOrigin(origins={"http://localhost:8080", "http://34.87.132.52/", "https://fe-repo-inky.vercel.app"})
 public class OrderController {
     private static final String MESSAGE_KEY = "message";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Something Wrong With Server";
