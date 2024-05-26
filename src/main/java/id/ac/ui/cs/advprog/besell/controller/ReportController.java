@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value = "/report", produces = "application/json")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins={"http://localhost:8080", "http://34.87.132.52", "https://fe-repo-inky.vercel.app"})
 public class ReportController {
 
     @Autowired
