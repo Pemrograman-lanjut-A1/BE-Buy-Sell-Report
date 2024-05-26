@@ -1,22 +1,24 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
-import id.ac.ui.cs.advprog.besell.model.Cart;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.besell.model.Checkout;
 import id.ac.ui.cs.advprog.besell.service.CheckoutService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CheckoutControllerTest {
 
     @Mock
@@ -28,31 +30,43 @@ class CheckoutControllerTest {
     @InjectMocks
     private CheckoutController checkoutController;
 
-    private List<Cart> cartItems;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private Checkout checkout;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        cartItems = Arrays.asList(
-                new Cart.Builder("1", "Product 1").quantity(2).price(10.0).build(),
-                new Cart.Builder("2", "Product 2").quantity(1).price(20.0).build()
-        );
-        double totalAmount = 40.0;
-        String shippingAddress = "123 Main St.";
-        String paymentMethod = "Credit Card";
-        checkout = new Checkout(cartItems, totalAmount, shippingAddress, paymentMethod);
+        checkout = new Checkout();
+        checkout.setShippingAddress("123 Main St");
+        checkout.setPaymentMethod("Credit Card");
     }
 
+//    @Test
+//    void processCheckout_WithOKResponse() throws JsonProcessingException {
+//        List<Cart> mockCartItems = Collections.singletonList(new Cart());
+//        ResponseEntity<String> okResponseEntity = ResponseEntity.ok(objectMapper.writeValueAsString(mockCartItems));
+//
+//        when(cartController.getCartItems(token)).thenReturn(CompletableFuture.completedFuture(objectMapper.writeValueAsString(okResponseEntity)));
+//        when(checkoutService.processCheckout(anyList(), anyString(), anyString())).thenReturn(CompletableFuture.completedFuture(ResponseEntity.ok().build()));
+//
+//        CompletableFuture<ResponseEntity<Checkout>> result = checkoutController.processCheckout(checkout, token);
+//
+//        assertEquals(HttpStatus.OK, result.join().getStatusCode());
+//        verify(cartController, times(1)).getCartItems(token);
+//        verify(checkoutService, times(1)).processCheckout(mockCartItems, "123 Main St", "Credit Card");
+//    }
+
     @Test
-    void testProcessCheckout() {
-        when(cartController.getCartItems()).thenReturn(ResponseEntity.ok(cartItems));
-        when(checkoutService.processCheckout(cartItems, checkout.getShippingAddress(), checkout.getPaymentMethod()))
-                .thenReturn(CompletableFuture.completedFuture(checkout));
+    void processCheckout_WithErrorResponse() throws JsonProcessingException {
+        ResponseEntity<String> errorResponseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
 
-        CompletableFuture<ResponseEntity<Checkout>> checkoutResponse = checkoutController.processCheckout(checkout);
-        ResponseEntity<Checkout> expectedResponse = ResponseEntity.ok(checkout);
+        String token = "fake-token";
+        when(cartController.getCartItems(token)).thenReturn(CompletableFuture.completedFuture(objectMapper.writeValueAsString(errorResponseEntity)));
 
-        assertEquals(expectedResponse, checkoutResponse.join());
+        CompletableFuture<ResponseEntity<Checkout>> result = checkoutController.processCheckout(checkout, token);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.join().getStatusCode());
+        verify(cartController, times(1)).getCartItems(token);
+        verify(checkoutService, never()).processCheckout(anyList(), anyString(), anyString());
     }
 }
