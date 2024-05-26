@@ -1,74 +1,82 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import id.ac.ui.cs.advprog.besell.model.Cart;
 import id.ac.ui.cs.advprog.besell.service.CartService;
+import id.ac.ui.cs.advprog.besell.service.JwtService;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class CartControllerTest {
-
-    @InjectMocks
-    private CartController cartController;
+class CartControllerTest {
 
     @Mock
     private CartService cartService;
 
+    @Mock
+    private JwtService jwtService;
+
+    @InjectMocks
+    private CartController cartController;
+
     @BeforeEach
-    public void setup() {
+    void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testAddItemToCart() {
-        Cart cartItem = new Cart.Builder("123", "Test Product")
-                .quantity(1)
-                .price(10.0)
-                .build();
-        ResponseEntity<String> responseEntity = cartController.addItemToCart(cartItem);
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals("Item added to cart", responseEntity.getBody());
+    void testGetCartItems() throws JsonProcessingException {
+        String token = "validToken";
+        List<Cart> cartItems = new ArrayList<>();
+        cartItems.add(new Cart.Builder("123", "Product 1").quantity(1).price(10.0).build());
+        cartItems.add(new Cart.Builder("456", "Product 2").quantity(2).price(20.0).build());
+        CompletableFuture<String> expectedResponse = CompletableFuture.completedFuture("[{\"productId\":\"123\",\"productName\":\"Product 1\",\"quantity\":1,\"price\":10.0},{\"productId\":\"456\",\"productName\":\"Product 2\",\"quantity\":2,\"price\":20.0}]");
+
+        when(jwtService.resolveClaims(token)).thenReturn(mock(Claims.class));
+        when(jwtService.validateClaims(any())).thenReturn(true);
+        when(cartService.getCartItems()).thenReturn(cartItems);
+
+        CompletableFuture<String> response = cartController.getCartItems(token);
+        assertEquals(expectedResponse.join(), response.join());
     }
 
     @Test
-    public void testGetCartItems() {
-        List<Cart> expectedCartItems = Arrays.asList(
-                new Cart.Builder("123", "Test Product 1").quantity(1).price(10.0).build(),
-                new Cart.Builder("456", "Test Product 2").quantity(2).price(20.0).build()
-        );
-        when(cartService.getCartItems()).thenReturn(expectedCartItems);
-
-        ResponseEntity<List<Cart>> responseEntity = cartController.getCartItems();
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedCartItems, responseEntity.getBody());
-    }
-
-    @Test
-    public void testUpdateItemQuantity() {
+    void testUpdateItemQuantity() {
+        String token = "validToken";
         String productId = "123";
         int quantity = 5;
+        ResponseEntity<String> expectedResponse = ResponseEntity.ok("Item quantity updated");
 
-        ResponseEntity<String> responseEntity = cartController.updateItemQuantity(productId, quantity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("Item quantity updated", responseEntity.getBody());
+        when(jwtService.resolveClaims(token)).thenReturn(mock(Claims.class));
+        when(jwtService.validateClaims(any())).thenReturn(true);
+
+        ResponseEntity<String> response = cartController.updateItemQuantity(token, productId, quantity);
+        assertEquals(expectedResponse, response);
     }
 
     @Test
-    public void testRemoveItemFromCart() {
+    void testRemoveItemFromCart() {
+        String token = "validToken";
         String productId = "123";
+        ResponseEntity<String> expectedResponse = ResponseEntity.ok("Item removed from cart");
 
-        ResponseEntity<String> responseEntity = cartController.removeItemFromCart(productId);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("Item removed from cart", responseEntity.getBody());
+        when(jwtService.resolveClaims(token)).thenReturn(mock(Claims.class));
+        when(jwtService.validateClaims(any())).thenReturn(true);
+
+        ResponseEntity<String> response = cartController.removeItemFromCart(token, productId);
+        assertEquals(expectedResponse, response);
     }
 }
