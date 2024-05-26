@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value = "/report", produces = "application/json")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins={"http://localhost:8080", "http://34.87.132.52", "https://fe-repo-inky.vercel.app"})
 public class ReportController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class ReportController {
         }
 
         return reportService.createReport(report)
-                .thenApply(createdReport -> ResponseEntity.created(URI.create("/reports/" + createdReport.getId())).body(createdReport))
+                .thenApply(createdReport -> ResponseEntity.created(URI.create("/report/" + createdReport.getId())).body(createdReport))
                 .exceptionally(ex -> {
                     if (ex.getCause() instanceof ResponseStatusException) {
                         throw (ResponseStatusException) ex.getCause();
