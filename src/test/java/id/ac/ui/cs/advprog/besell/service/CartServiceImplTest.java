@@ -52,7 +52,7 @@ public class CartServiceImplTest {
         when(cartRepository.addItemToCart(cartItem)).thenReturn(cartItem);
 
         CompletableFuture<Cart> result = cartService.addItemToCart(cartItem);
-        Cart addedItem = result.get(); // Wait for the asynchronous operation to complete
+        Cart addedItem = result.get();
 
         assertNotNull(addedItem);
         assertEquals("1", addedItem.getProductId());

@@ -26,11 +26,6 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart updateItemQuantity() {
-        return null;
-    }
-
-    @Override
     public Cart updateItemQuantity(String productId, int newQuantity) {
         return cartRepository.updateItemQuantity(productId, newQuantity);
     }

@@ -7,9 +7,6 @@ import java.util.concurrent.CompletableFuture;
 public interface CartService {
     CompletableFuture<Cart> addItemToCart(Cart cartItem);
     List<Cart> getCartItems();
-    Cart updateItemQuantity();
     Cart updateItemQuantity(String productId, int newQuantity);
     Cart removeItemFromCart(String productId);
 }
-
-

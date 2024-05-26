@@ -7,6 +7,7 @@ import lombok.Setter;
 public class Cart {
     private final String productId;
     private final String productName;
+
     @Setter
     private int quantity;
     private final double price;
