@@ -36,7 +36,7 @@ public class ReportController {
         }
 
         return reportService.createReport(report)
-                .thenApply(createdReport -> ResponseEntity.created(URI.create("/reports/" + createdReport.getId())).body(createdReport))
+                .thenApply(createdReport -> ResponseEntity.created(URI.create("/report/" + createdReport.getId())).body(createdReport))
                 .exceptionally(ex -> {
                     if (ex.getCause() instanceof ResponseStatusException) {
                         throw (ResponseStatusException) ex.getCause();
