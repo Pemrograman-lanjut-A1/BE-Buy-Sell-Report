@@ -20,8 +20,10 @@ public class ReportTest {
         report = new ReportBuilder().authorId(authorId).description("Barang ini tidak sesuai").reportDate(dateCreated).targetId(targetId)
                 .targetType(ReportTargetType.ITEM).build();
         assertEquals(report.getDescription(), "Barang ini tidak sesuai");
+
         assertEquals(report.getAuthorId(), authorId);
         assertEquals(report.getReportDate(), dateCreated);
+
         assertEquals(report.getTargetId(), targetId);
         assertEquals(report.getTargetType(), ReportTargetType.ITEM);
     }

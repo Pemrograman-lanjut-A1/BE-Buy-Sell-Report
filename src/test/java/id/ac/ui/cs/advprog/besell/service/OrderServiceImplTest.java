@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.Order;
+import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
 import id.ac.ui.cs.advprog.besell.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,16 +35,16 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void testCreateAndFind() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
-        Order order = builder.setBuyerId("FakeBuyerId")
-                .build();
+    void testCreateAndFind() throws ExecutionException, InterruptedException {
+        OrderBuilder builder = new OrderBuilder("FakeBuyerId", "FakeSellerId");
+        Order order = builder.build();
 
         Mockito.when(orderRepository.save(order)).thenReturn(order);
         orderService.create(order);
 
         Mockito.when(orderRepository.findAll()).thenReturn(List.of(order));
-        List<Order> orderList = orderService.findAll();
+        CompletableFuture<List<Order>> orderListFuture = orderService.findAll();
+        List<Order> orderList = orderListFuture.get();
 
         assertFalse(orderList.isEmpty());
         Order savedOrder = orderList.getFirst();
@@ -51,18 +54,20 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void testFindAllIfEmpty() {
+    void testFindAllIfEmpty() throws ExecutionException, InterruptedException{
         List<Order> orderList = new ArrayList<>();
         Mockito.when(orderRepository.findAll()).thenReturn(orderList);
 
-        List<Order> orders = orderService.findAll();
+        CompletableFuture<List<Order>> ordersFuture = orderService.findAll();
+        List<Order> orders = ordersFuture.get();
+
 
         assertTrue(orders.isEmpty());
     }
 
     @Test
-    void testFindAllIfMoreThanOneOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+    void testFindAllIfMoreThanOneOrder() throws ExecutionException, InterruptedException{
+        OrderBuilder builder = new OrderBuilder("FakeItemId", "FakeSellerId");
         Order order1 = builder.setBuyerId("FakeBuyerId")
                 .build();
 
@@ -75,7 +80,8 @@ public class OrderServiceImplTest {
         orderService.create(order2);
 
         Mockito.when(orderRepository.findAll()).thenReturn(List.of(order1, order2));
-        List<Order> orderList = orderService.findAll();
+        CompletableFuture<List<Order>> orderListFuture = orderService.findAll();
+        List<Order> orderList = orderListFuture.get();
 
         assertFalse(orderList.isEmpty());
         assertEquals(order1.getId(), orderList.getFirst().getId());
@@ -84,22 +90,23 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void testEditOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+    void testEditOrder() throws ExecutionException, InterruptedException{
+        OrderBuilder builder = new OrderBuilder("FakeItemId", "FakeSellerId");
         Order order = builder.setBuyerId("FakeBuyerId")
                 .build();
         order.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         Mockito.when(orderRepository.save(order)).thenReturn(order);
         orderService.create(order);
 
-        builder = new Order.OrderBuilder("FakeItemId2");
+        builder = new OrderBuilder("FakeItemId2", "FakeSellerId");
         Order editedOrder = builder.setBuyerId("FakeBuyerId")
                 .build();
         editedOrder.setId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         orderService.update(editedOrder);
 
         Mockito.when(orderRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(Optional.of(editedOrder));
-        Optional<Order> resultOrder = orderService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        CompletableFuture<Optional<Order>> resultOrderFuture = orderService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Optional<Order> resultOrder = resultOrderFuture.get();
 
         assertEquals(editedOrder, resultOrder.get());
         Mockito.verify(orderRepository).save(editedOrder);
@@ -107,7 +114,7 @@ public class OrderServiceImplTest {
 
     @Test
     void testDeleteOrder() {
-        Order.OrderBuilder builder = new Order.OrderBuilder("FakeItemId");
+        OrderBuilder builder = new OrderBuilder("FakeItemId", "FakeSellerId");
         Order order1 = builder.setBuyerId("FakeBuyerId")
                 .build();
 

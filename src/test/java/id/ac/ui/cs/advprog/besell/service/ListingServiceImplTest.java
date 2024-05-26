@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.besell.service;
 import id.ac.ui.cs.advprog.besell.model.Listing;
+import id.ac.ui.cs.advprog.besell.model.builder.ListingBuilder;
 import id.ac.ui.cs.advprog.besell.repository.ListingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ class ListingServiceImplTest {
 
     @Test
     void testCreateAndFind() throws ExecutionException, InterruptedException{
-        Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
+        ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
         Listing listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
@@ -65,7 +66,7 @@ class ListingServiceImplTest {
 
     @Test
     void testFindAllIfMoreThanOneListing() throws ExecutionException, InterruptedException {
-        Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
+        ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
         Listing listing1 = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
@@ -93,7 +94,7 @@ class ListingServiceImplTest {
 
     @Test
     void testEditListing() throws ExecutionException, InterruptedException {
-        Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
+        ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
         Listing listing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
@@ -102,7 +103,7 @@ class ListingServiceImplTest {
         Mockito.when(listingRepository.save(listing)).thenReturn(listing);
         listingService.create(listing);
 
-        builder = new Listing.ListingBuilder("Blue Jeans", 12000);
+        builder = new ListingBuilder("Blue Jeans", 12000);
         Listing editedListing = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")
@@ -120,7 +121,7 @@ class ListingServiceImplTest {
 
     @Test
     void testDeleteListing() {
-        Listing.ListingBuilder builder = new Listing.ListingBuilder("Red Sweater", 12000);
+        ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
         Listing listing1 = builder.setStock(99)
                 .setDescription("The color of the sweater is red")
                 .setImageUrl("google.com")

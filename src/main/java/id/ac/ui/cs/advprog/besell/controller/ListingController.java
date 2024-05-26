@@ -108,7 +108,7 @@ public class ListingController {
                 .thenApply(listing -> {
                     if (listing.isEmpty()){
                         response.put("code", HttpStatus.NOT_FOUND.value());
-                        response.put("message", "Listing with ID " + id + " not found.");
+                        response.put("message", "Listing with seller ID " + id + " not found.");
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                     }
                     return ResponseEntity.ok(listing);

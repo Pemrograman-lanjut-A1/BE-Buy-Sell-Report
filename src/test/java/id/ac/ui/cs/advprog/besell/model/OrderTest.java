@@ -1,18 +1,19 @@
 package id.ac.ui.cs.advprog.besell.model;
 
 import id.ac.ui.cs.advprog.besell.enums.OrderStatus;
+import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class OrderTest {
     Order order;
-    Order.OrderBuilder orderBuilder;
+    OrderBuilder orderBuilder;
     Listing listing;
 
     @BeforeEach
     void SetUp(){
-        this.orderBuilder = new Order.OrderBuilder("FakeBuyerId");
+        this.orderBuilder = new OrderBuilder("FakeBuyerId", "SellerId");
         this.order = orderBuilder.build();
     }
     @Test
