@@ -2,7 +2,9 @@ package id.ac.ui.cs.advprog.besell.controller;
 
 import id.ac.ui.cs.advprog.besell.enums.ReportTargetType;
 import id.ac.ui.cs.advprog.besell.model.Report;
+import id.ac.ui.cs.advprog.besell.service.JwtService;
 import id.ac.ui.cs.advprog.besell.service.ReportService;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,21 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping(value = "/report", produces = "application/json")
 @CrossOrigin(origins = "*")
 public class ReportController {
+
     @Autowired
-    ReportService reportService;
+    private ReportService reportService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/create")
-    public CompletableFuture<ResponseEntity<Report>> createReport(@RequestBody Report report) {
+    public CompletableFuture<ResponseEntity<Report>> createReport(@RequestHeader(value = "Authorization") String token, @RequestBody Report report) {
+        Claims claims = jwtService.resolveClaims(token);
+        
+        if (claims == null || !jwtService.validateClaims(claims)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        }
+
         return reportService.createReport(report)
                 .thenApply(createdReport -> ResponseEntity.created(URI.create("/reports/" + createdReport.getId())).body(createdReport))
                 .exceptionally(ex -> {
@@ -35,7 +47,12 @@ public class ReportController {
     }
 
     @PutMapping("/update/{id}")
-    public CompletableFuture<ResponseEntity<Report>> updateReport(@PathVariable String id, @RequestBody Report reportDetails) {
+    public CompletableFuture<ResponseEntity<Report>> updateReport(@RequestHeader(value = "Authorization") String token, @PathVariable String id, @RequestBody Report reportDetails) {
+        Claims claims = jwtService.resolveClaims(token);
+        if (claims == null || !jwtService.validateClaims(claims)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        }
+
         return reportService.updateReport(id, reportDetails)
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> {
@@ -48,7 +65,12 @@ public class ReportController {
     }
 
     @DeleteMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Void>> deleteReport(@PathVariable String id) {
+    public CompletableFuture<ResponseEntity<Void>> deleteReport(@RequestHeader(value = "Authorization") String token, @PathVariable String id) {
+        Claims claims = jwtService.resolveClaims(token);
+        if (claims == null || !jwtService.validateClaims(claims)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        }
+
         return reportService.deleteReport(id)
                 .<ResponseEntity<Void>>thenApply(response -> ResponseEntity.noContent().build())
                 .exceptionally(ex -> {
