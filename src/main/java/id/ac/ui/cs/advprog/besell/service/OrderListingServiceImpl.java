@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.besell.service;
 
 import id.ac.ui.cs.advprog.besell.model.OrderListing;
 import id.ac.ui.cs.advprog.besell.repository.OrderListingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class OrderListingServiceImpl implements OrderListingService{
 
-    @Autowired
     private OrderListingRepository orderListingRepository;
+
+    public OrderListingServiceImpl(OrderListingRepository orderListingRepository){
+        this.orderListingRepository = orderListingRepository;
+    }
 
     @Override
     public CompletableFuture<OrderListing> create(OrderListing order) {
