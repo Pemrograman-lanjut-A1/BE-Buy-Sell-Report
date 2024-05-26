@@ -42,4 +42,12 @@ public class OrderListingTest {
         this.orderListing.setQuantity(-3);
         assertEquals(0, this.orderListing.getQuantity());
     }
+    @Test
+    void testSetId(){
+        RelationshipId pk = new RelationshipId("order", "listing");
+        this.orderListing.setId(pk);
+        assertEquals(pk, this.orderListing.getId());
+        assertEquals("order", this.orderListing.getOrderId());
+        assertEquals("listing", this.orderListing.getListingId());
+    }
 }

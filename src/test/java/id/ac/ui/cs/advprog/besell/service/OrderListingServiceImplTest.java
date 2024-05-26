@@ -1,6 +1,8 @@
 package id.ac.ui.cs.advprog.besell.service;
 import id.ac.ui.cs.advprog.besell.model.Listing;
+import id.ac.ui.cs.advprog.besell.model.Order;
 import id.ac.ui.cs.advprog.besell.model.OrderListing;
+import id.ac.ui.cs.advprog.besell.model.builder.OrderBuilder;
 import id.ac.ui.cs.advprog.besell.repository.ListingRepository;
 import id.ac.ui.cs.advprog.besell.repository.OrderListingRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class OrderListingServiceImplTest {
@@ -33,7 +36,7 @@ class OrderListingServiceImplTest {
     }
 
     @Test
-    void testCreateAndFind(){
+    void testCreateAndFind() throws ExecutionException, InterruptedException{
         OrderListing orderListing = new OrderListing();
         orderListing.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         orderListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
@@ -43,7 +46,8 @@ class OrderListingServiceImplTest {
         orderListingService.create(orderListing);
 
         Mockito.when(orderListingRepository.findAll()).thenReturn(List.of(orderListing));
-        List<OrderListing> orderListingList = orderListingService.findAll();
+        CompletableFuture<List<OrderListing>> orderListingListFuture = orderListingService.findAll();
+        List<OrderListing> orderListingList = orderListingListFuture.get();
 
         assertFalse(orderListingList.isEmpty());
         OrderListing saved= orderListingList.getFirst();
@@ -53,40 +57,47 @@ class OrderListingServiceImplTest {
     }
 
     @Test
-    void testFindAllIfEmpty() {
+    void testFindAllIfEmpty() throws ExecutionException, InterruptedException{
         List<OrderListing> orderListingList = new ArrayList<>();
         Mockito.when(orderListingRepository.findAll()).thenReturn(orderListingList);
 
-        List<OrderListing> products = orderListingService.findAll();
+        CompletableFuture<List<OrderListing>> productsFuture = orderListingService.findAll();
+        List<OrderListing> products = productsFuture.get();
 
         assertTrue(products.isEmpty());
     }
 
     @Test
-    void testEditListing() {
+    void testFindByOrderId() throws ExecutionException, InterruptedException{
         OrderListing orderListing = new OrderListing();
         orderListing.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        orderListing.setListingId("Sampo Cap Bambang");
+        orderListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         orderListing.setQuantity(100);
 
         Mockito.when(orderListingRepository.save(orderListing)).thenReturn(orderListing);
         orderListingService.create(orderListing);
 
-        OrderListing editedOrderListing = new OrderListing();
-        editedOrderListing.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        editedOrderListing.setListingId("Sampo Cap Bango");
-        editedOrderListing.setQuantity(0);
-        orderListingService.update(editedOrderListing);
+        OrderListing orderListing2 = new OrderListing();
+        orderListing.setOrderId("id1");
+        orderListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        orderListing.setQuantity(100);
 
-        Mockito.when(orderListingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6")).thenReturn(Optional.of(editedOrderListing));
-        Optional<OrderListing> resultOrderListing = orderListingService.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        Mockito.when(orderListingRepository.save(orderListing2)).thenReturn(orderListing2);
+        orderListingService.create(orderListing2);
 
-        assertEquals(editedOrderListing, resultOrderListing.get());
-        Mockito.verify(orderListingRepository).save(editedOrderListing);
+        Mockito.when(orderListingRepository.findByOrderId("id1")).thenReturn(List.of(orderListing2));
+        CompletableFuture<List<OrderListing>> orderListingListFuture = orderListingService.findByOrderId("id1");
+        List<OrderListing> orderListingList = orderListingListFuture.get();
+
+        assertFalse(orderListingList.isEmpty());
+        OrderListing saved = orderListingList.getFirst();
+        assertEquals(orderListing2.getOrderId(), saved.getOrderId());
+        assertEquals(orderListing2.getListingId(), saved.getListingId());
+        assertEquals(orderListing2.getQuantity(), saved.getQuantity());
     }
 
     @Test
-    void testDeleteListing() {
+    void testDeleteListing() throws ExecutionException, InterruptedException{
         OrderListing orderListing1 = new OrderListing();
         orderListing1.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         orderListing1.setListingId("Sampo Cap Bambang");
@@ -98,5 +109,30 @@ class OrderListingServiceImplTest {
         orderListingService.delete(orderListing1.getOrderId());
 
         Mockito.verify(orderListingRepository).deleteById(orderListing1.getOrderId());
+    }
+
+    @Test
+    void testEditOrderListing() throws ExecutionException, InterruptedException{
+        OrderListing orderListing = new OrderListing();
+        orderListing.setOrderId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        orderListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        orderListing.setQuantity(100);
+
+        Mockito.when(orderListingRepository.save(orderListing)).thenReturn(orderListing);
+        orderListingService.create(orderListing);
+
+        OrderListing orderListing2 = new OrderListing();
+        orderListing.setOrderId("id1");
+        orderListing.setListingId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        orderListing.setQuantity(100);
+
+        orderListingService.update(orderListing2);
+
+        Mockito.when(orderListingRepository.save(orderListing2)).thenReturn(orderListing2);
+        CompletableFuture<OrderListing> resultOrderFuture = orderListingService.update(orderListing2);
+        OrderListing result = resultOrderFuture.get();
+
+        assertEquals(orderListing2, result);
+        Mockito.verify(orderListingRepository, times(2)).save(orderListing2);
     }
 }

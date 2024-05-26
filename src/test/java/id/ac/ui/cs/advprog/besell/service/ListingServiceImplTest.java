@@ -93,6 +93,34 @@ class ListingServiceImplTest {
     }
 
     @Test
+    void testFindBySellerId() throws ExecutionException, InterruptedException {
+        ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
+        Listing listing1 = builder.setStock(99)
+                .setDescription("The color of the sweater is red")
+                .setImageUrl("google.com")
+                .setSellerId("seller1")
+                .build();
+
+        Mockito.when(listingRepository.save(listing1)).thenReturn(listing1);
+        listingService.create(listing1);
+
+        Listing listing2 = builder.setStock(99)
+                .setDescription("The color of the jeans is blue")
+                .setImageUrl("bluejeans.com")
+                .setSellerId("seller2")
+                .build();
+        Mockito.when(listingRepository.save(listing2)).thenReturn(listing2);
+        listingService.create(listing2);
+
+        Mockito.when(listingRepository.findBySellerId("seller1")).thenReturn(List.of(listing1));
+        CompletableFuture<List<Listing>> listingListFuture = listingService.findBySellerId("seller1");
+        List<Listing> listingList = listingListFuture.get();
+
+        assertFalse(listingList.isEmpty());
+        assertEquals(listing1.getId(), listingList.getFirst().getId());
+    }
+
+    @Test
     void testEditListing() throws ExecutionException, InterruptedException {
         ListingBuilder builder = new ListingBuilder("Red Sweater", 12000);
         Listing listing = builder.setStock(99)

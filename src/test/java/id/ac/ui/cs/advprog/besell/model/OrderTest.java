@@ -31,6 +31,10 @@ public class OrderTest {
         order.setStatus("SUCCESS");
         assertEquals(OrderStatus.SUCCESS.getValue(), this.order.getStatus());
     }
+    @Test
+    void testSetOrderStatusError(){
+        assertThrows(IllegalArgumentException.class, () -> order.setStatus("No Status"));
+    }
 
     @Test
     void testGetOrderBuyer(){

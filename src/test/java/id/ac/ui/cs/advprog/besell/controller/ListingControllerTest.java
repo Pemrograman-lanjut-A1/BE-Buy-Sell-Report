@@ -1,10 +1,11 @@
 package id.ac.ui.cs.advprog.besell.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import id.ac.ui.cs.advprog.besell.config.JwtAuthFilter;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.*;
 
 import id.ac.ui.cs.advprog.besell.model.Listing;
 import id.ac.ui.cs.advprog.besell.service.ListingService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +34,10 @@ public class ListingControllerTest {
 
     @Mock
     private ListingService listingService;
+
+    @Mock
+    private JwtAuthFilter jwtAuthFilter;
+
 
     @InjectMocks
     private ListingController listingController;
@@ -76,69 +82,17 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testCreateListing() throws Exception {
-        // Mocking the service response
-        Listing listing = new Listing();
-        listing.setId("123");
-        listing.setName("Test Listing");
-        CompletableFuture<Listing> future = CompletableFuture.completedFuture(listing);
-        when(listingService.create(any(Listing.class))).thenReturn(future);
+    public void findByIdInternalError() throws Exception {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.findById(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
 
-        // Perform POST request
-        MvcResult result = mockMvc.perform(post("/listing")
-                        .contentType("application/json")
-                        .content("{\"id\":\"123\",\"name\":\"Test Listing\"}"))
-                        .andExpect(status().isOk())
-                        .andExpect(request().asyncStarted())
-                        .andReturn();
+        // Act
+        ResponseEntity<?> responseEntity =
+                listingController.findById("fakeId").get();
 
-        mockMvc.perform(asyncDispatch(result))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.listing.id").value("123"))
-                .andExpect(jsonPath("$.listing.name").value("Test Listing"))
-                .andExpect(jsonPath("$.message").value("Listing Created Successfully"));
-    }
-
-    @Test
-    public void testDeleteListing() throws Exception {
-        // Mocking the service response
-        CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
-        when(listingService.delete("123")).thenReturn(future);
-
-        // Perform DELETE request
-        MvcResult result = mockMvc.perform(delete("/listing/123"))
-                .andExpect(status().isOk())
-                .andExpect(request().asyncStarted())
-                .andReturn();
-
-        mockMvc.perform(asyncDispatch(result))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.message").value("Listing Deleted Successfully"));
-    }
-
-    @Test
-    public void testUpdateListing() throws Exception {
-        // Mocking the service response
-        Listing listing = new Listing();
-        listing.setId("123");
-        listing.setName("Updated Listing");
-        CompletableFuture<Listing> future = CompletableFuture.completedFuture(listing);
-        when(listingService.update(any(Listing.class))).thenReturn(future);
-
-        // Perform PUT request
-        MvcResult result = mockMvc.perform(put("/listing")
-                        .contentType("application/json")
-                        .content("{\"id\":\"123\",\"name\":\"Updated Listing\"}"))
-                .andExpect(status().isOk())
-                .andExpect(request().asyncStarted())
-                .andReturn();
-
-        mockMvc.perform(asyncDispatch(result))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.listing.id").value("123"))
-                .andExpect(jsonPath("$.listing.name").value("Updated Listing"))
-                .andExpect(jsonPath("$.message").value("Listing ID 123 updated Successfully"));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test
@@ -162,6 +116,20 @@ public class ListingControllerTest {
     }
 
     @Test
+    public void findAllInternalError() throws Exception {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.findAll()).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
+
+        // Act
+        ResponseEntity<List<Listing>> responseEntity =
+                listingController.findAllListings().get();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
     public void testFindBySellerId() throws Exception {
         // Mocking the service response
         Listing listing = new Listing();
@@ -181,4 +149,213 @@ public class ListingControllerTest {
                 .andExpect(jsonPath("$[0].id").value("123"))
                 .andExpect(jsonPath("$[0].sellerId").value("TestId"));
     }
+
+    @Test
+    public void findBySellerIdInternalError() throws Exception {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.findBySellerId(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
+
+        // Act
+        ResponseEntity<?> responseEntity =
+                listingController.findBySellerId("fakeId").get();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testFindBySellerId_NotFound() throws Exception {
+        // Mocking the service response
+        CompletableFuture<List<Listing>> future = CompletableFuture.completedFuture(Collections.emptyList());
+        when(listingService.findBySellerId(anyString())).thenReturn(future);
+
+        MvcResult result = mockMvc.perform(get("/listing/seller/123"))
+                .andExpect(status().isOk())
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(result))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testCreateListing() throws Exception {
+        // Mocking the service response
+        Listing listing = new Listing();
+        listing.setId("123");
+        listing.setName("Test Listing");
+        CompletableFuture<Listing> future = CompletableFuture.completedFuture(listing);
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.create(any(Listing.class))).thenReturn(future);
+
+        // Perform POST request
+        MvcResult result = mockMvc.perform(post("/listing")
+                        .contentType("application/json")
+                        .header("Authorization", "mockToken")
+                        .content("{\"id\":\"123\",\"name\":\"Test Listing\"}"))
+                        .andExpect(status().isOk())
+                        .andExpect(request().asyncStarted())
+                        .andReturn();
+
+        mockMvc.perform(asyncDispatch(result))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.listing.id").value("123"))
+                .andExpect(jsonPath("$.listing.name").value("Test Listing"))
+                .andExpect(jsonPath("$.message").value("Listing Created Successfully"));
+    }
+
+    @Test
+    public void createListingInternalError() {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.create(any(Listing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
+
+        // Act
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.createListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void createListingExpiredJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenThrow(ExpiredJwtException.class);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.createListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void createListingEmptyJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn(null);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.createListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+        assertEquals("You are not authorized to make this request", responseEntity.getBody().get("message"));
+    }
+
+    @Test
+    public void testDeleteListing() throws Exception {
+        // Mocking the service response
+        CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.delete("123")).thenReturn(future);
+
+        // Perform DELETE request
+        MvcResult result = mockMvc.perform(
+                delete("/listing/123")
+                        .header("Authorization", "mockToken")
+                )
+                .andExpect(status().isOk())
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(result))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Listing Deleted Successfully"));
+    }
+    @Test
+    public void deleteListingInternalError() throws Exception {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.delete(any(String.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
+
+        // Act
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.deleteListing("mockedToken", "mockId").join();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void deleteListingExpiredJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenThrow(ExpiredJwtException.class);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.deleteListing("mockedToken", "mockId").join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void deleteListingEmptyJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn(null);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.deleteListing("mockedToken", "mockId").join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+        assertEquals("You are not authorized to make this request", responseEntity.getBody().get("message"));
+    }
+
+    @Test
+    public void testUpdateListing() throws Exception {
+        // Mocking the service response
+        Listing listing = new Listing();
+        listing.setId("123");
+        listing.setName("Updated Listing");
+        CompletableFuture<Listing> future = CompletableFuture.completedFuture(listing);
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.update(any(Listing.class))).thenReturn(future);
+
+        // Perform PUT request
+        MvcResult result = mockMvc.perform(put("/listing")
+                        .contentType("application/json")
+                        .header("Authorization", "mockToken")
+                        .content("{\"id\":\"123\",\"name\":\"Updated Listing\"}"))
+                .andExpect(status().isOk())
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(result))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.listing.id").value("123"))
+                .andExpect(jsonPath("$.listing.name").value("Updated Listing"))
+                .andExpect(jsonPath("$.message").value("Listing ID 123 updated Successfully"));
+    }
+
+    @Test
+    public void updateListingInternalError() throws Exception {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn("ADMIN");
+        when(listingService.update(any(Listing.class))).thenReturn(CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("Simulated exception");
+        }));
+
+        // Act
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.updateListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void updateListingExpiredJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenThrow(ExpiredJwtException.class);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.updateListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+        assertEquals("You are not authorized to make this request", responseEntity.getBody().get("message"));
+    }
+
+    @Test
+    void updateListingEmptyJwtToken() {
+        when(jwtAuthFilter.filterToken(anyString())).thenReturn(null);
+
+        ResponseEntity<Map<String, Object>> responseEntity =
+                listingController.updateListing("mockedToken", new Listing()).join();
+
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+        assertEquals("You are not authorized to make this request", responseEntity.getBody().get("message"));
+    }
+
 }
