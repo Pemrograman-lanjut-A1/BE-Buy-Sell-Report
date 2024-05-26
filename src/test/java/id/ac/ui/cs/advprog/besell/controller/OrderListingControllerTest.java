@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-public class OrderListingControllerTest {
+class OrderListingControllerTest {
 
     private MockMvc mockMvc;
 
@@ -40,7 +40,7 @@ public class OrderListingControllerTest {
     private OrderListingController OrderListingController;
 
     public OrderListingControllerTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(OrderListingController).build();
     }
 

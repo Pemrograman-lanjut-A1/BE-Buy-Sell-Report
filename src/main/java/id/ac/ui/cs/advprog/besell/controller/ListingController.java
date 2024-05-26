@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(path="/listing", produces="application/json")
-@CrossOrigin(origins={"http://localhost:8080", "http://34.87.132.52/", "https://fe-repo-inky.vercel.app"})
+@CrossOrigin(origins={"http://localhost:8080", "https://fe-repo-inky.vercel.app"})
 public class ListingController {
     private static final String MESSAGE_KEY = "message";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Something Wrong With Server";
@@ -127,7 +127,7 @@ public class ListingController {
                     Map<String, Object> response = new HashMap<>();
                     response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
                     response.put(ERROR_KEY_MESSAGE, exception.getCause() != null ? exception.getCause().getMessage() : "Unknown error");
-                    response.put("message", "Something went wrong with the server");
+                    response.put(MESSAGE_KEY, "Something went wrong with the server");
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
                 });
     }
